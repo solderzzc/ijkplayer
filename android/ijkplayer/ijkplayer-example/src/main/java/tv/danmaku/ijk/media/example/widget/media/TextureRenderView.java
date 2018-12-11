@@ -298,6 +298,8 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+            Log.d(TAG, "onSurfaceTextureUpdated, time diff: " + 0);
         }
 
         //-------------------------

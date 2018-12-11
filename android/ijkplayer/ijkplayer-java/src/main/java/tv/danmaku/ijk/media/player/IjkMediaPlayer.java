@@ -749,6 +749,12 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
     public void setSpeed(float speed) {
         _setPropertyFloat(FFP_PROP_FLOAT_PLAYBACK_RATE, speed);
     }
+    public void setOutputFps(float fps){
+        _setPropertyFloat(PROP_FLOAT_VIDEO_OUTPUT_FRAMES_PER_SECOND, fps);
+    }
+    public void setDecodeFps(float fps){
+        _setPropertyFloat(PROP_FLOAT_VIDEO_DECODE_FRAMES_PER_SECOND, fps);
+    }
 
     public float getSpeed(float speed) {
         return _getPropertyFloat(FFP_PROP_FLOAT_PLAYBACK_RATE, .0f);
