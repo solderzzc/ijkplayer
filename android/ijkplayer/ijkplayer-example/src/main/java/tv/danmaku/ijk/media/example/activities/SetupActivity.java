@@ -17,8 +17,12 @@
 
 package tv.danmaku.ijk.media.example.activities;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -34,6 +38,8 @@ import tv.danmaku.ijk.media.example.fragments.SettingsFragment;
 
 public class SetupActivity extends AppCompatActivity {
     private Context mContext;
+    private static final int REQUESTCODE_PERMISSION_STORAGE = 1234;
+
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, SetupActivity.class);
         return intent;
@@ -49,6 +55,7 @@ public class SetupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setup);
         final Button button = (Button) findViewById(R.id.button);
         mContext = this;
+        ensureStoragePermissionGranted();
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
@@ -69,5 +76,21 @@ public class SetupActivity extends AppCompatActivity {
         //FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         //transaction.replace(R.id.body, newFragment);
         //transaction.commit();
+    }
+
+    /** For processes to access shared internal storage (/sdcard) we need this permission. */
+    @TargetApi(Build.VERSION_CODES.M)
+    public boolean ensureStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUESTCODE_PERMISSION_STORAGE);
+                return false;
+            }
+        } else {
+            // Always granted before Android 6.0.
+            return true;
+        }
     }
 }

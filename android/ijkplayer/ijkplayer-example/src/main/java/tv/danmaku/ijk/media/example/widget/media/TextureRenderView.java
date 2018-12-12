@@ -19,8 +19,12 @@ package tv.danmaku.ijk.media.example.widget.media;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -32,10 +36,15 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
+import java.net.ConnectException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import tv.danmaku.ijk.media.example.utils.screenshot;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.ISurfaceTextureHolder;
 import tv.danmaku.ijk.media.player.ISurfaceTextureHost;
@@ -44,10 +53,64 @@ import tv.danmaku.ijk.media.player.ISurfaceTextureHost;
 public class TextureRenderView extends TextureView implements IRenderView {
     private static final String TAG = "TextureRenderView";
     private MeasureHelper mMeasureHelper;
+    private Context mContext;
+    private Handler mBackgroundHandler;
 
+    private static final int PROCESS_SAVED_IMAGE_MSG = 1002;
+    class MyCallback implements Handler.Callback {
+
+        @Override
+        public boolean handleMessage(Message msg) {
+
+            File file = null;
+            URL url;
+            HttpURLConnection urlConnection = null;
+            switch (msg.what) {
+                case PROCESS_SAVED_IMAGE_MSG:
+                    Log.d(TAG, "Processing file: " + msg.obj);
+                    file = new File(msg.obj.toString());
+                    try {
+                        url = new URL("http://127.0.0.1:" + 3000 + "/api/post?url=" + msg.obj);
+
+                        urlConnection = (HttpURLConnection) url
+                                .openConnection();
+
+                        int responseCode = urlConnection.getResponseCode();
+                        if (responseCode == HttpURLConnection.HTTP_OK) {
+                            Log.d(TAG, "connect success ");
+                        } else {
+                            file.delete();
+                        }
+                    } catch (ConnectException e) {
+
+                    } catch (Exception e) {
+                        file.delete();
+                        urlConnection = null;
+                        //e.printStackTrace();
+                        Log.v(TAG, "Detector is not running");
+                    } finally {
+                        if (urlConnection != null) {
+                            urlConnection.disconnect();
+                            return true;
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
+    }
     public TextureRenderView(Context context) {
         super(context);
+        mContext = context;
+        HandlerThread handlerThread = new HandlerThread("BackgroundThread");
+        handlerThread.start();
+        MyCallback callback = new MyCallback();
+        mBackgroundHandler = new Handler(handlerThread.getLooper(), callback);
+
         initView(context);
+
     }
 
     public TextureRenderView(Context context, AttributeSet attrs) {
@@ -212,7 +275,8 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
     private SurfaceCallback mSurfaceCallback;
 
-    private static final class SurfaceCallback implements TextureView.SurfaceTextureListener, ISurfaceTextureHost {
+    private class SurfaceCallback implements TextureView.SurfaceTextureListener, ISurfaceTextureHost {
+        private long mStartTime = 0;// System.currentTimeMillis();
         private SurfaceTexture mSurfaceTexture;
         private boolean mIsFormatChanged;
         private int mWidth;
@@ -296,10 +360,54 @@ public class TextureRenderView extends TextureView implements IRenderView {
             return mOwnSurfaceTexture;
         }
 
+
+
+        private void processFrame(SurfaceTexture surface){
+
+            Bitmap bmp= mWeakRenderView.get().getBitmap();
+            String filename = "";
+            File file = null;
+
+            try {
+                file = screenshot.getInstance()
+                        .saveScreenshotToPicturesFolder(mContext, bmp, "frame_");
+
+                filename = file.getAbsolutePath();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //bitmap.recycle();
+            //bitmap = null;
+            if(filename.equals("")){
+                return;
+            }
+            if(file == null){
+                return;
+            }
+            mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
+            return;
+        }
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 
-            Log.d(TAG, "onSurfaceTextureUpdated, time diff: " + 0);
+            Log.d(TAG, "onSurfaceTextureUpdated");
+            boolean needSaveFrame = false;
+            long currentTime = System.currentTimeMillis();
+            if(mStartTime == 0) {
+                mStartTime = currentTime;
+                needSaveFrame = true;
+            } else if (currentTime - mStartTime > 200){
+                needSaveFrame = true;
+                mStartTime = currentTime;
+            }
+            if(needSaveFrame){
+                long start = System.currentTimeMillis();
+                processFrame(surface);
+                long end = System.currentTimeMillis();
+                Log.v(TAG,"time diff is "+(end-start));
+            }
         }
 
         //-------------------------
