@@ -17,12 +17,10 @@
 
 package tv.danmaku.ijk.media.example.activities;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -30,7 +28,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,7 +39,6 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.misc.ITrackInfo;
 import tv.danmaku.ijk.media.example.R;
 import tv.danmaku.ijk.media.example.application.Settings;
-import tv.danmaku.ijk.media.example.content.RecentMediaStorage;
 import tv.danmaku.ijk.media.example.fragments.TracksFragment;
 import tv.danmaku.ijk.media.example.widget.media.AndroidMediaController;
 import tv.danmaku.ijk.media.example.widget.media.IjkVideoView;
@@ -51,7 +47,7 @@ import tv.danmaku.ijk.media.example.widget.media.MeasureHelper;
 public class VideoActivity extends AppCompatActivity implements TracksFragment.ITrackHolder {
     private static final String TAG = "VideoActivity";
 
-    private String mVideoPath;
+    private String mVideoURL;
     private Uri    mVideoUri;
 
     private AndroidMediaController mMediaController;
@@ -64,15 +60,14 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
     private Settings mSettings;
     private boolean mBackPressed;
 
-    public static Intent newIntent(Context context, String videoPath, String videoTitle) {
+    public static Intent newIntent(Context context, String videoUrl) {
         Intent intent = new Intent(context, VideoActivity.class);
-        intent.putExtra("videoPath", videoPath);
-        intent.putExtra("videoTitle", videoTitle);
+        intent.putExtra("videoUrl", videoUrl);
         return intent;
     }
 
-    public static void intentTo(Context context, String videoPath, String videoTitle) {
-        context.startActivity(newIntent(context, videoPath, videoTitle));
+    public static void intentTo(Context context, String videoUrl) {
+        context.startActivity(newIntent(context, videoUrl));
     }
 
     @Override
@@ -83,40 +78,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         mSettings = new Settings(this);
 
         // handle arguments
-        mVideoPath = getIntent().getStringExtra("videoPath");
-
-        Intent intent = getIntent();
-        String intentAction = intent.getAction();
-        if (!TextUtils.isEmpty(intentAction)) {
-            if (intentAction.equals(Intent.ACTION_VIEW)) {
-                mVideoPath = intent.getDataString();
-            } else if (intentAction.equals(Intent.ACTION_SEND)) {
-                mVideoUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    String scheme = mVideoUri.getScheme();
-                    if (TextUtils.isEmpty(scheme)) {
-                        Log.e(TAG, "Null unknown scheme\n");
-                        finish();
-                        return;
-                    }
-                    if (scheme.equals(ContentResolver.SCHEME_ANDROID_RESOURCE)) {
-                        mVideoPath = mVideoUri.getPath();
-                    } else if (scheme.equals(ContentResolver.SCHEME_CONTENT)) {
-                        Log.e(TAG, "Can not resolve content below Android-ICS\n");
-                        finish();
-                        return;
-                    } else {
-                        Log.e(TAG, "Unknown scheme " + scheme + "\n");
-                        finish();
-                        return;
-                    }
-                }
-            }
-        }
-
-        if (!TextUtils.isEmpty(mVideoPath)) {
-            new RecentMediaStorage(this).saveUrlAsync(mVideoPath);
-        }
+        mVideoURL = getIntent().getStringExtra("videoUrl");
 
         // init UI
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -140,11 +102,9 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         mVideoView = (IjkVideoView) findViewById(R.id.video_view);
         mVideoView.setMediaController(mMediaController);
         mVideoView.setHudView(mHudView);
-        // prefer mVideoPath
-        if (mVideoPath != null)
-            mVideoView.setVideoPath(mVideoPath);
-        else if (mVideoUri != null)
-            mVideoView.setVideoURI(mVideoUri);
+        // prefer mVideoURL
+        if (mVideoURL != null)
+            mVideoView.setVideoRTSP(mVideoURL);
         else {
             Log.e(TAG, "Null Data Source\n");
             finish();

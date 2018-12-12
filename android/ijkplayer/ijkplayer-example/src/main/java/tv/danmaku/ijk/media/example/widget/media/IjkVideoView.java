@@ -23,7 +23,6 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -39,22 +38,16 @@ import android.widget.MediaController;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-//import tv.danmaku.ijk.media.exo.IjkExoMediaPlayer;
-import tv.danmaku.ijk.media.player.AndroidMediaPlayer;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkTimedText;
 import tv.danmaku.ijk.media.player.TextureMediaPlayer;
-import tv.danmaku.ijk.media.player.misc.IMediaDataSource;
 import tv.danmaku.ijk.media.player.misc.IMediaFormat;
 import tv.danmaku.ijk.media.player.misc.ITrackInfo;
 import tv.danmaku.ijk.media.player.misc.IjkMediaFormat;
@@ -65,7 +58,7 @@ import tv.danmaku.ijk.media.example.services.MediaPlayerService;
 public class IjkVideoView extends FrameLayout implements MediaController.MediaPlayerControl {
     private String TAG = "IjkVideoView";
     // settable by the client
-    private Uri mUri;
+    private String mRtspURL;
     private Map<String, String> mHeaders;
 
     // all possible internal states
@@ -248,36 +241,13 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     }
 
     /**
-     * Sets video path.
-     *
-     * @param path the path of the video.
-     */
-    public void setVideoPath(String path) {
-        setVideoURI(Uri.parse(path));
-    }
-
-    /**
-     * Sets video URI.
-     *
-     * @param uri the URI of the video.
-     */
-    public void setVideoURI(Uri uri) {
-        setVideoURI(uri, null);
-    }
-
-    /**
      * Sets video URI using specific headers.
      *
-     * @param uri     the URI of the video.
-     * @param headers the headers for the URI request.
-     *                Note that the cross domain redirection is allowed by default, but that can be
-     *                changed with key/value pairs through the headers parameter with
-     *                "android-allow-cross-domain-redirect" as the key and "0" or "1" as the value
-     *                to disallow or allow cross domain redirection.
+     * @param rtspURL     the URI of the video.
      */
-    private void setVideoURI(Uri uri, Map<String, String> headers) {
-        mUri = uri;
-        mHeaders = headers;
+    public void setVideoRTSP(String rtspURL) {
+        mRtspURL = rtspURL;
+        mHeaders = null;
         mSeekWhenPrepared = 0;
         openVideo();
         requestLayout();
@@ -303,7 +273,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     @TargetApi(Build.VERSION_CODES.M)
     private void openVideo() {
-        if (mUri == null || mSurfaceHolder == null) {
+        if (mRtspURL == null || mSurfaceHolder == null) {
             // not ready for playback just yet, will try again later
             return;
         }
@@ -347,7 +317,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                 mMediaPlayer.setDataSource(mUri.toString());
             }*/
 
-            mMediaPlayer.setDataSource("rtsp://admin:abc123@10.20.10.96:554/cam/realmonitor?channel=1&subtype=0");
+            mMediaPlayer.setDataSource(mRtspURL);//"rtsp://admin:abc123@10.20.10.96:554/cam/realmonitor?channel=1&subtype=0");
             bindSurfaceHolder(mMediaPlayer, mSurfaceHolder);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setScreenOnWhilePlaying(true);
@@ -363,12 +333,12 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             mCurrentState = STATE_PREPARING;
             attachMediaController();
         } catch (IOException ex) {
-            Log.w(TAG, "Unable to open content: " + mUri, ex);
+            Log.w(TAG, "Unable to open content: " + mRtspURL, ex);
             mCurrentState = STATE_ERROR;
             mTargetState = STATE_ERROR;
             mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
         } catch (IllegalArgumentException ex) {
-            Log.w(TAG, "Unable to open content: " + mUri, ex);
+            Log.w(TAG, "Unable to open content: " + mRtspURL, ex);
             mCurrentState = STATE_ERROR;
             mTargetState = STATE_ERROR;
             mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
@@ -1025,7 +995,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         IMediaPlayer mediaPlayer = null;
 
         IjkMediaPlayer ijkMediaPlayer = null;
-        if (mUri != null) {
+        if (mRtspURL != null) {
             ijkMediaPlayer = new IjkMediaPlayer();
             ijkMediaPlayer.native_setLogLevel(IjkMediaPlayer.IJK_LOG_DEBUG);
 

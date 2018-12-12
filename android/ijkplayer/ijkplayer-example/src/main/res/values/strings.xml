@@ -69,5 +69,8 @@
     <string name="VideoView_player_AndroidMediaPlayer">Player: AndroidMediaPlayer</string>
     <string name="VideoView_player_IjkMediaPlayer">Player: IjkMediaPlayer</string>
     <string name="VideoView_player_IjkExoMediaPlayer">Player: IjkExoMediaPlayer</string>
+    <string name="dahuaip">DaHuaCameraIP</string>
+    <string name="ip_address">IP Address</string>
+    <string name="start">开始播放</string>
 
 </resources>

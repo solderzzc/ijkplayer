@@ -64,7 +64,7 @@ public class SampleMediaListFragment extends Fragment {
                 SampleMediaItem item = mAdapter.getItem(position);
                 String name = item.mName;
                 String url = item.mUrl;
-                VideoActivity.intentTo(activity, url, name);
+                VideoActivity.intentTo(activity, url);
             }
         });
 
