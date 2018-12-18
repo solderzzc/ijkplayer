@@ -81,8 +81,6 @@ public class TextureRenderView extends TextureView implements IRenderView {
                         } else {
                             file.delete();
                         }
-                    } catch (ConnectException e) {
-
                     } catch (Exception e) {
                         file.delete();
                         urlConnection = null;
