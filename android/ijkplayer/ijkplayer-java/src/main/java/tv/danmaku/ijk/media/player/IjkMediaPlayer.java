@@ -756,10 +756,6 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
         _setPropertyFloat(PROP_FLOAT_VIDEO_DECODE_FRAMES_PER_SECOND, fps);
     }
 
-    public void setImmediateReconnect(long value) {
-        _setPropertyLong(FFP_PROP_INT64_IMMEDIATE_RECONNECT, value);
-    }
-
     public float getSpeed(float speed) {
         return _getPropertyFloat(FFP_PROP_FLOAT_PLAYBACK_RATE, .0f);
     }
@@ -771,6 +767,7 @@ public final class IjkMediaPlayer extends AbstractMediaPlayer {
     public float getVideoOutputFramesPerSecond() {
         return _getPropertyFloat(PROP_FLOAT_VIDEO_OUTPUT_FRAMES_PER_SECOND, 0.0f);
     }
+
     public float getVideoDecodeFramesPerSecond() {
         return _getPropertyFloat(PROP_FLOAT_VIDEO_DECODE_FRAMES_PER_SECOND, 0.0f);
     }
