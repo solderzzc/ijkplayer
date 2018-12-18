@@ -3,6 +3,9 @@ include ':ijkplayer-armv7a'
 include ':ijkplayer-arm64'
 include ':ijkplayer-x86'
 
+include ':easyrs'
+include ':rembrandtAndroid'
+
 include ':ijkplayer-java'
 include ':ijkplayer'
 
