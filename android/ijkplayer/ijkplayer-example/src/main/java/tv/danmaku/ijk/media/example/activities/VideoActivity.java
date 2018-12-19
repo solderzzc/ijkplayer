@@ -19,6 +19,7 @@ package tv.danmaku.ijk.media.example.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -30,15 +31,19 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v8.renderscript.RenderScript;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sharpai.pim.MotionDetection;
 import com.sharpai.pim.MotionDetectionRS;
+
+import org.w3c.dom.Text;
 
 import elanic.in.rsenhancer.processing.RSImageProcessor;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -93,7 +98,14 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         mSettings = new Settings(this);
 
         // handle arguments
-        mVideoURL = getIntent().getStringExtra("videoUrl");
+        //mVideoURL = getIntent().getStringExtra("videoUrl");
+        SharedPreferences sp = getSharedPreferences(CameraScanActivity.CAMERAIPKEY, Context.MODE_PRIVATE);
+        mVideoURL = sp.getString("videoURL", "");
+        if (TextUtils.isEmpty(mVideoURL)) {
+            Toast.makeText(this, "Camera IP is not set, please scan and set it first", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
 
         // init UI
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
