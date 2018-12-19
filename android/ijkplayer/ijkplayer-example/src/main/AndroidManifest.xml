@@ -13,6 +13,10 @@
     <!-- for umeng -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -20,9 +24,9 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="tv.danmaku.ijk.media.example.activities.SetupActivity"
+            android:name="tv.danmaku.ijk.media.example.activities.CameraScanActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name"
+            android:label="@string/camera_app_name"
             android:screenOrientation="user"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -32,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="tv.danmaku.ijk.media.example.activities.FileExplorerActivity"
+            android:name="tv.danmaku.ijk.media.example.activities.SetupActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="user"
@@ -44,33 +48,47 @@
             </intent-filter>-->
         </activity>
         <activity
-            android:name="tv.danmaku.ijk.media.example.activities.SampleMediaActivity"
+            android:name="tv.danmaku.ijk.media.example.activities.FileExplorerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="user"
             android:theme="@style/AppTheme">
+
+            <!--
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            -->
         </activity>
         <activity
-            android:name="tv.danmaku.ijk.media.example.activities.RecentMediaActivity"
+            android:name=".activities.SampleMediaActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="user"
-            android:theme="@style/AppTheme">
-        </activity>
+            android:theme="@style/AppTheme"></activity>
         <activity
-            android:name="tv.danmaku.ijk.media.example.activities.SettingsActivity"
+            android:name=".activities.RecentMediaActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:screenOrientation="user"
+            android:theme="@style/AppTheme"></activity>
+        <activity
+            android:name=".activities.SettingsActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:screenOrientation="user"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="tv.danmaku.ijk.media.example.activities.VideoActivity"
+            android:name=".activities.VideoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name"
+            android:label="@string/video_app_name"
             android:screenOrientation="user"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="video/*" />
@@ -80,19 +98,36 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="video/*" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <service
-            android:name="tv.danmaku.ijk.media.example.services.MediaPlayerService"
+            android:name=".services.MediaPlayerService"
             android:enabled="false"
             android:exported="false"
             android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_name" >
-        </service>
+            android:label="@string/app_name"></service>
+
+        <receiver
+            android:name=".receivers.BootUpReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.actiont.QUICKBOOT_POWERON" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
