@@ -61,9 +61,10 @@ public class SetupActivity extends AppCompatActivity {
 
         @Override
         public void invoke(DEVICE_NET_INFO_EX device_net_info_ex) {
-            String temp = "IP : "+ new String(device_net_info_ex.szIP).trim() + "\n" +
-                    "IP : " + new String(device_net_info_ex.szSerialNo).trim();
+            String temp = "IP : "+ new String(device_net_info_ex.szIP).trim() +
+                    " SN : " + new String(device_net_info_ex.szSerialNo).trim();
             String ipaddress = new String(device_net_info_ex.szIP).trim();
+            String SN = new String(device_net_info_ex.szSerialNo).trim();
             ///Filter repeated and only show IPV4
             ///过滤重复的以及只显示IPV4
             if((!inforSet.contains(temp)) && (device_net_info_ex.iIPVersion == 4)){
@@ -71,8 +72,10 @@ public class SetupActivity extends AppCompatActivity {
                 //Message msg = mHandler.obtainMessage(UPDATE_SEARCH_DEV_INFOR);
                 //msg.obj = temp;
                 //mHandler.sendMessage(msg);
-                String videoUrl = "rtsp://admin:abc12345@"+ipaddress+":554/cam/realmonitor?channel=1&subtype=0";
-                VideoActivity.intentTo(mContext, videoUrl);
+                if(SN.equals("ND021711020155")){
+                    String videoUrl = "rtsp://admin:abc123@"+ipaddress+":554/cam/realmonitor?channel=1&subtype=0";
+                    VideoActivity.intentTo(mContext, videoUrl);
+                }
             }
             Log.d("Device","Got Devices"+temp);
         }

@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import elanic.in.rsenhancer.processing.RSImageProcessor;
+import tv.danmaku.ijk.media.example.activities.VideoActivity;
 import tv.danmaku.ijk.media.example.utils.screenshot;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.ISurfaceTextureHolder;
@@ -149,17 +150,20 @@ public class TextureRenderView extends TextureView implements IRenderView {
     public TextureRenderView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView(context);
+        initDetectionContext();
     }
 
     public TextureRenderView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView(context);
+        initDetectionContext();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public TextureRenderView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initView(context);
+        initDetectionContext();
     }
 
     private void initView(Context context) {
@@ -402,6 +406,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
             boolean bigChanged = mMotionDetection.detect(bmp);
             String filename = "";
             File file = null;
+            VideoActivity.setMotionStatus(bigChanged);
             if(!bigChanged){
                 Log.d(TAG,"No Big changes, skip this frame");
                 //bmp.recycle();

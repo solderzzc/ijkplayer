@@ -66,6 +66,8 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
     private Settings mSettings;
     private boolean mBackPressed;
 
+    private static boolean mHasMotion;
+
     public static Intent newIntent(Context context, String videoUrl) {
         Intent intent = new Intent(context, VideoActivity.class);
         intent.putExtra("videoUrl", videoUrl);
@@ -76,6 +78,13 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         context.startActivity(newIntent(context, videoUrl));
     }
 
+    public static boolean getMotionStatus(){
+        return mHasMotion;
+    }
+
+    public static void setMotionStatus(boolean motion){
+        mHasMotion = motion;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
