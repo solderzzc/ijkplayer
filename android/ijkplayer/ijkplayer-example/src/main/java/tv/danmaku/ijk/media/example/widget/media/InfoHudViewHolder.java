@@ -1,12 +1,19 @@
 package tv.danmaku.ijk.media.example.widget.media;
 
 import android.content.Context;
+import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
+import android.text.format.Formatter;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.TableLayout;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 import java.util.Locale;
 
 import tv.danmaku.ijk.media.example.activities.VideoActivity;
@@ -15,12 +22,15 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.MediaPlayerProxy;
 import tv.danmaku.ijk.media.example.R;
 
+import static android.content.Context.WIFI_SERVICE;
+
 public class InfoHudViewHolder {
     private TableLayoutBinder mTableLayoutBinder;
     private SparseArray<View> mRowMap = new SparseArray<View>();
     private IMediaPlayer mMediaPlayer;
     private long mLoadCost = 0;
     private long mSeekCost = 0;
+    private Context mContext;
 
     public InfoHudViewHolder(Context context, TableLayout tableLayout) {
         mTableLayoutBinder = new TableLayoutBinder(context, tableLayout);
@@ -98,7 +108,22 @@ public class InfoHudViewHolder {
             return String.format(Locale.US, "%d B", bytes);
         }
     }
-
+    public static String getLocalIpAddress() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                        return inetAddress.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
     private static final int MSG_UPDATE_HUD = 1;
     private Handler mHandler = new Handler() {
         @Override
@@ -123,10 +148,10 @@ public class InfoHudViewHolder {
                     int vdec = mp.getVideoDecoder();
                     switch (vdec) {
                         case IjkMediaPlayer.FFP_PROPV_DECODER_AVCODEC:
-                            setRowValue(R.string.vdec, "Software");
+                            setRowValue(R.string.vdec, "sw");
                             break;
                         case IjkMediaPlayer.FFP_PROPV_DECODER_MEDIACODEC:
-                            setRowValue(R.string.vdec, "Hardware");
+                            setRowValue(R.string.vdec, "hw");
                             break;
                         default:
                             setRowValue(R.string.vdec, "");
@@ -144,11 +169,12 @@ public class InfoHudViewHolder {
                     long tcpSpeed            = mp.getTcpSpeed();
                     long bitRate             = mp.getBitRate();
                     long seekLoadDuration    = mp.getSeekLoadDuration();
-                    String hasMotion = VideoActivity.getMotionStatus()?"Yes":"No";
+                    String hasMotion = VideoActivity.getMotionStatus()?"yes":"no";
                     setRowValue(R.string.v_cache, String.format(Locale.US, "%s, %s", formatedDurationMilli(videoCachedDuration), formatedSize(videoCachedBytes)));
                     setRowValue(R.string.a_cache, String.format(Locale.US, "%s, %s", formatedDurationMilli(audioCachedDuration), formatedSize(audioCachedBytes)));
                     setRowValue(R.string.load_cost, String.format(Locale.US, "%d ms", mLoadCost));
                     setRowValue(R.string.has_motion, String.format(Locale.US, "%s", hasMotion));
+                    setRowValue(R.string.ip, String.format(Locale.US, "%s", getLocalIpAddress()));
 
                     //setRowValue(R.string.seek_cost, String.format(Locale.US, "%d ms", mSeekCost));
                     //setRowValue(R.string.seek_load_cost, String.format(Locale.US, "%d ms", seekLoadDuration));
