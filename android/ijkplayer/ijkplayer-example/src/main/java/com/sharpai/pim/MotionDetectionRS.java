@@ -26,7 +26,7 @@ public class MotionDetectionRS {
 	/* Control the threshold above which two pixels are considered different
 	 * 25 means 10% pixel difference
 	 * */
-	private static final KeyValue<String,Integer> mPixelThreshold = new KeyValue<String,Integer>("pim.md.pixel_threshold", 50);
+	private static final KeyValue<String,Integer> mPixelThreshold = new KeyValue<String,Integer>("pim.md.pixel_threshold", 20);
 
 	/* Control the threshold above which two images are considered different
 	 * 9216 = 3% of a 640x480 image
@@ -47,7 +47,7 @@ public class MotionDetectionRS {
 	private static final KeyValue<String,Integer> mPixelFormat =
 		new KeyValue<String, Integer>("pim.md.pixel_format", AndroidImageFactory.IMAGE_FORMAT_NV21);
 
-	private static final double MOTION_THRESHOLD = 0.04;
+	private static final double MOTION_THRESHOLD = 0.02;
 
 	// Background image
 	private Bitmap mBackground = null;
@@ -118,6 +118,52 @@ public class MotionDetectionRS {
 			bmp = Nv21Image.nv21ToBitmap(mRS, data, width, height);;
 		}
 		return bmp;
+	}
+
+	public boolean detect(Bitmap bmp) {
+		long start = System.currentTimeMillis();
+		if(mOrigHeight != mToHeight || mOrigWidth!= mToWidth){
+			bmp = resizeBmp(bmp,mToWidth,mToHeight);
+		}
+
+		//Bitmap saveBmp = ;
+		if(mBackground == null) {
+			mBackground = bmp.copy(bmp.getConfig(),bmp.isMutable());
+			bmp.recycle();
+			bmp = null;
+			Log.i(TAG, "Creating background image");
+			return false;
+		}
+
+		boolean motionDetected = false;
+
+		RembrandtComparisonResult result = mRSCompare.compareBitmaps(mBackground, bmp);
+		//mRSCompare.compareBitmaps(mBackground, bmp);
+		double difference = result.getPercentageOfDifferentPixels();
+
+		mLastPixelDifference = result.getDifferentPixels();
+		mLastDiffRect = result.getLastRect();
+		//mComparisionBitmap = result.getComparisionBitmap();
+
+		if(difference > MOTION_THRESHOLD){
+			motionDetected = true;
+		}
+		Log.i(TAG,"RS 2 "+ (System.currentTimeMillis() - start)+" motion: "+motionDetected);
+
+		if(!motionDetected){
+			return false;
+		}
+
+		//if(mLastDiffRect.width() * mLastDiffRect.height() / (mToWidth*mToHeight) > 0.98){
+		//	Log.i(TAG, "Almost all changed");
+		//	mBackground = bmp.copy(bmp.getConfig(),bmp.isMutable());
+		//	return false;
+		//}
+
+		mBackground = bmp.copy(bmp.getConfig(),bmp.isMutable());
+		Log.i(TAG, "Image difference  " + difference + " Motion: " + motionDetected);
+
+		return motionDetected;
 	}
 	public boolean detect(byte[] data) {
 		long start = System.currentTimeMillis();

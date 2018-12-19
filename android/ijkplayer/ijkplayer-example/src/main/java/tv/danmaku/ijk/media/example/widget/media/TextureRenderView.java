@@ -27,6 +27,7 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v8.renderscript.RenderScript;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Surface;
@@ -36,6 +37,9 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.sharpai.pim.MotionDetection;
+import com.sharpai.pim.MotionDetectionRS;
+
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.ConnectException;
@@ -44,6 +48,7 @@ import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import elanic.in.rsenhancer.processing.RSImageProcessor;
 import tv.danmaku.ijk.media.example.utils.screenshot;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.ISurfaceTextureHolder;
@@ -57,6 +62,36 @@ public class TextureRenderView extends TextureView implements IRenderView {
     private Handler mBackgroundHandler;
 
     private static final int PROCESS_SAVED_IMAGE_MSG = 1002;
+
+    private int DETECTION_IMAGE_WIDTH = 1920;
+    private int DETECTION_IMAGE_HEIGHT = 1080;
+    private int PREVIEW_IMAGE_WIDTH = 1920;
+    private int PREVIEW_IMAGE_HEIGHT = 1080;
+
+    private RenderScript mRS = null;
+    private MotionDetectionRS mMotionDetection;
+    private RSImageProcessor mRSProcessor;
+
+    /**
+     * Initializes the UI and initiates the creation of a motion detector.
+     */
+    public void initDetectionContext() {
+        String devModel = Build.MODEL;
+        if (devModel != null && devModel.equals("JDN-W09") && PREVIEW_IMAGE_HEIGHT>960) {
+            PREVIEW_IMAGE_WIDTH = 1280;
+            PREVIEW_IMAGE_HEIGHT = 960;
+        }
+
+        DETECTION_IMAGE_HEIGHT = DETECTION_IMAGE_WIDTH * PREVIEW_IMAGE_HEIGHT  / PREVIEW_IMAGE_WIDTH;
+        Log.i(TAG,"DETECTION_IMAGE_HEIGHT " + DETECTION_IMAGE_HEIGHT);
+
+        mRS = RenderScript.create(mContext);
+        mMotionDetection = new MotionDetectionRS(mContext.getSharedPreferences(
+                MotionDetection.PREFS_NAME, Context.MODE_PRIVATE),mRS,
+                PREVIEW_IMAGE_WIDTH,PREVIEW_IMAGE_HEIGHT,DETECTION_IMAGE_WIDTH,DETECTION_IMAGE_HEIGHT);
+        mRSProcessor = new RSImageProcessor(mRS);
+        mRSProcessor.initialize(DETECTION_IMAGE_WIDTH, DETECTION_IMAGE_HEIGHT);
+    }
     class MyCallback implements Handler.Callback {
 
         @Override
@@ -108,7 +143,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
         mBackgroundHandler = new Handler(handlerThread.getLooper(), callback);
 
         initView(context);
-
+        initDetectionContext();
     }
 
     public TextureRenderView(Context context, AttributeSet attrs) {
@@ -287,6 +322,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
         private WeakReference<TextureRenderView> mWeakRenderView;
         private Map<IRenderCallback, Object> mRenderCallbackMap = new ConcurrentHashMap<IRenderCallback, Object>();
 
+
         public SurfaceCallback(@NonNull TextureRenderView renderView) {
             mWeakRenderView = new WeakReference<TextureRenderView>(renderView);
         }
@@ -363,9 +399,14 @@ public class TextureRenderView extends TextureView implements IRenderView {
         private void processFrame(SurfaceTexture surface){
 
             Bitmap bmp= mWeakRenderView.get().getBitmap();
+            boolean bigChanged = mMotionDetection.detect(bmp);
             String filename = "";
             File file = null;
-
+            if(!bigChanged){
+                Log.d(TAG,"No Big changes, skip this frame");
+                //bmp.recycle();
+                return;
+            }
             try {
                 file = screenshot.getInstance()
                         .saveScreenshotToPicturesFolder(mContext, bmp, "frame_");
@@ -396,7 +437,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
             if(mStartTime == 0) {
                 mStartTime = currentTime;
                 needSaveFrame = true;
-            } else if (currentTime - mStartTime > 200){
+            } else if (currentTime - mStartTime > 300){
                 needSaveFrame = true;
                 mStartTime = currentTime;
             }
