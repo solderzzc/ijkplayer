@@ -177,6 +177,9 @@ public class CameraScanActivity extends ListActivity {
         String videoUrl = "rtsp://admin:abc12345@"+ci.getIp()+":554/cam/realmonitor?channel=1&subtype=0";
         editor.putString("videoURL", videoUrl);
         editor.putString("videoIP", ci.getIp());
+        editor.putString("cameraSN", ci.getSn());
+        editor.putString("cameraUsername", "");
+        editor.putString("cameraPassword", "");
         editor.commit();
         cameraInfoAdapter.setCurrentSelectedIP(ci.getIp());
     }

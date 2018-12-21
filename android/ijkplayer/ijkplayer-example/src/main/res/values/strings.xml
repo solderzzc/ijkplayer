@@ -23,7 +23,9 @@
     <string name="load_cost">load-cost</string>
     <string name="has_motion">motion</string>
     <string name="pixel_diff">diff-area</string>
-    <string name="ip">ip-address</string>
+    <string name="ip">box-ip</string>
+    <string name="camera_ip">camera-ip</string>
+    <string name="camera_sn">camera-sn</string>
     <string name="seek_cost">seek_cost</string>
     <string name="seek_load_cost">seek_load_cost</string>
     <string name="tcp_speed">tcp_speed</string>

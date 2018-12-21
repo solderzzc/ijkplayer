@@ -1,6 +1,7 @@
 package tv.danmaku.ijk.media.example.widget.media;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.util.SparseArray;
@@ -22,15 +23,18 @@ import tv.danmaku.ijk.media.example.R;
 
 
 public class InfoHudViewHolder {
+    public static final String CAMERAIPKEY = "tv.danmaku.ijk.media.example.activities.CameraScanActivity.VideoSettings";
     private TableLayoutBinder mTableLayoutBinder;
     private SparseArray<View> mRowMap = new SparseArray<View>();
     private IMediaPlayer mMediaPlayer;
     private long mLoadCost = 0;
     private long mSeekCost = 0;
     private Context mContext;
+    SharedPreferences mSharedPreferences;
 
     public InfoHudViewHolder(Context context, TableLayout tableLayout) {
         mTableLayoutBinder = new TableLayoutBinder(context, tableLayout);
+        mSharedPreferences = context.getSharedPreferences(CAMERAIPKEY, Context.MODE_PRIVATE);
     }
 
     private void appendSection(int nameId) {
@@ -121,6 +125,12 @@ public class InfoHudViewHolder {
         }
         return null;
     }
+    private String getSN() {
+        return mSharedPreferences.getString("cameraSN","");
+    }
+    private String getCameraIP() {
+        return mSharedPreferences.getString("videoIP","");
+    }
     private static final int MSG_UPDATE_HUD = 1;
     private Handler mHandler = new Handler() {
         @Override
@@ -176,6 +186,8 @@ public class InfoHudViewHolder {
                     setRowValue(R.string.pixel_diff, String.format(Locale.US, "%.2f %%", pixelDiff));
 
                     setRowValue(R.string.ip, String.format(Locale.US, "%s", getLocalIpAddress()));
+                    setRowValue(R.string.camera_ip, String.format(Locale.US, "%s", getCameraIP()));
+                    setRowValue(R.string.camera_sn, String.format(Locale.US, "%s", getSN()));
 
                     //setRowValue(R.string.seek_cost, String.format(Locale.US, "%d ms", mSeekCost));
                     //setRowValue(R.string.seek_load_cost, String.format(Locale.US, "%d ms", seekLoadDuration));
