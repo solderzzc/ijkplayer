@@ -8,7 +8,8 @@ import android.graphics.Color;
 
 public class RembrandtCompareOptions {
 
-    public static final float DEFAULT_MAXIMUM_COLOR_DISTANCE = 175.0f;
+    // This value is color difference threshold
+    public static final float DEFAULT_MAXIMUM_COLOR_DISTANCE = 150.0f;
     public static final float DEFAULT_MAXIMUM_PERCENTAGE_OF_DIFFERENT_PIXELS = 1.0f;
     public static final int DEFAULT_COLOR_BITMAP_PIXEL_EQUAL = Color.TRANSPARENT;
     public static final int DEFAULT_COLOR_BITMAP_PIXEL_DIFFERENT = Color.BLACK;

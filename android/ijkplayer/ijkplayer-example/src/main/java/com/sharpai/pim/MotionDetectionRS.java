@@ -18,7 +18,7 @@ import ly.img.android.rembrandt.RembrandtComparisonResult;
 
 public class MotionDetectionRS {
 
-	private static final String TAG = "MotionDetection";
+	private static final String TAG = "MotionDetectionRS";
 
 	/* File storing motion detection's preferences */
 	public static final String PREFS_NAME = "prefs_md";
@@ -54,6 +54,8 @@ public class MotionDetectionRS {
 	private Bitmap mLastBitmap = null;
 
 	private ExtractDiffFromRSResult mExtractor = new ExtractDiffFromRSResult();
+
+	private double mPercentageOfDifferentPixels=0.0f;
 
 	// The image that is used for motion detection
 	private int[] mAndroidImage;
@@ -139,16 +141,16 @@ public class MotionDetectionRS {
 
 		RembrandtComparisonResult result = mRSCompare.compareBitmaps(mBackground, bmp);
 		//mRSCompare.compareBitmaps(mBackground, bmp);
-		double difference = result.getPercentageOfDifferentPixels();
+		mPercentageOfDifferentPixels = result.getPercentageOfDifferentPixels();
 
 		mLastPixelDifference = result.getDifferentPixels();
 		mLastDiffRect = result.getLastRect();
 		//mComparisionBitmap = result.getComparisionBitmap();
 
-		if(difference > MOTION_THRESHOLD){
+		if(mPercentageOfDifferentPixels > MOTION_THRESHOLD){
 			motionDetected = true;
 		}
-		Log.i(TAG,"RS 2 "+ (System.currentTimeMillis() - start)+" motion: "+motionDetected);
+		Log.i(TAG,"RS 2 "+ (System.currentTimeMillis() - start)+String.format(" %.2f%%",mPercentageOfDifferentPixels*100.0f)+" motion: "+motionDetected);
 
 		if(!motionDetected){
 			return false;
@@ -161,7 +163,7 @@ public class MotionDetectionRS {
 		//}
 
 		mBackground = bmp.copy(bmp.getConfig(),bmp.isMutable());
-		Log.i(TAG, "Image difference  " + difference + " Motion: " + motionDetected);
+		//Log.i(TAG, "Image difference  " + String.format(" %.2f",mPercentageOfDifferentPixels*100.0f) + "% Motion: " + motionDetected);
 
 		return motionDetected;
 	}
@@ -174,52 +176,14 @@ public class MotionDetectionRS {
 		} else {
 			bmp = Nv21Image.nv21ToBitmap(mRS, data, mToWidth, mToHeight);;
 		}
-		//Bitmap saveBmp = ;
-		if(mBackground == null) {
-			mBackground = bmp.copy(bmp.getConfig(),bmp.isMutable());
-			bmp.recycle();
-            bmp = null;
-			Log.i(TAG, "Creating background image");
-			return false;
-		}
-
-		boolean motionDetected = false;
-
-		RembrandtComparisonResult result = mRSCompare.compareBitmaps(mBackground, bmp);
-		//mRSCompare.compareBitmaps(mBackground, bmp);
-		double difference = result.getPercentageOfDifferentPixels();
-
-		mLastPixelDifference = result.getDifferentPixels();
-		mLastDiffRect = result.getLastRect();
-		//mComparisionBitmap = result.getComparisionBitmap();
-
-		if(difference > MOTION_THRESHOLD){
-			motionDetected = true;
-		}
-		Log.i(TAG,"RS 2 "+ (System.currentTimeMillis() - start));
-
-		if(!motionDetected){
-			bmp.recycle();
-			return false;
-		}
-
-		if(mLastDiffRect.width() * mLastDiffRect.height() / (mToWidth*mToHeight) > 0.98){
-			Log.i(TAG, "Almost all changed");
-			bmp.recycle();
-			return false;
-		}
-
-		mBackground = bmp.copy(bmp.getConfig(),bmp.isMutable());
-		bmp.recycle();
-		Log.i(TAG, "Image difference  " + difference + " Motion: " + motionDetected);
-
-		return motionDetected;
+		return detect(bmp);
 	}
 	public Bitmap getComparisionBitmap() { return mComparisionBitmap;}
 	public Bitmap getLastBitmap(){ return mBackground;}
 	public int getLastPixelDifference(){
 		return mLastPixelDifference;
 	}
+	public double getPercentageOfDifferentPixels(){return mPercentageOfDifferentPixels;}
 	public Rect getLastDiffRect(){
 		return mLastDiffRect;
 	}

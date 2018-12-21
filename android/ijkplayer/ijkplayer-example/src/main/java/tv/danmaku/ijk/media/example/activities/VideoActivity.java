@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -33,7 +32,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.support.v8.renderscript.RenderScript;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -43,12 +41,6 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sharpai.pim.MotionDetection;
-import com.sharpai.pim.MotionDetectionRS;
-
-import org.w3c.dom.Text;
-
-import elanic.in.rsenhancer.processing.RSImageProcessor;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.misc.ITrackInfo;
@@ -76,6 +68,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
     private boolean mBackPressed;
 
     private long mLastFrameTimeStamp = 0L;
+
     private Handler mHeartbeatHandler = null;
     private Runnable mHeartbeatRunnable = new Runnable() {
         @Override
@@ -90,19 +83,19 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
             mHeartbeatHandler.postDelayed(mHeartbeatRunnable, 5000);
         }
     };
-
     private void quitAndStartLater() {
         Intent intent = new Intent(VideoActivity.this, VideoActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(VideoActivity.this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         AlarmManager mgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        mgr.set(AlarmManager.RTC, System.currentTimeMillis()+5000, pendingIntent);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis()+15000, pendingIntent);
 
         finish();
         System.exit(2);
     }
 
     private static boolean mHasMotion;
+    private static double mPixelDiff;
 
     public static Intent newIntent(Context context, String videoUrl) {
         Intent intent = new Intent(context, VideoActivity.class);
@@ -113,7 +106,13 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
     public static void intentTo(Context context, String videoUrl) {
         context.startActivity(newIntent(context, videoUrl));
     }
+    public static double getPixelDiff(){
+        return mPixelDiff;
+    }
 
+    public static void setPixelDiff(double pixedlDiff){
+        mPixelDiff = pixedlDiff;
+    }
     public static boolean getMotionStatus(){
         return mHasMotion;
     }
@@ -160,6 +159,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         mVideoView = (IjkVideoView) findViewById(R.id.video_view);
         mVideoView.setMediaController(mMediaController);
         mVideoView.setHudView(mHudView);
+
         // prefer mVideoURL
         if (mVideoURL != null)
             mVideoView.setVideoRTSP(mVideoURL);

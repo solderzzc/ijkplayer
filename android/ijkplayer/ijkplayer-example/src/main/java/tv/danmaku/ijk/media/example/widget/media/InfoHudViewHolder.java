@@ -1,10 +1,8 @@
 package tv.danmaku.ijk.media.example.widget.media;
 
 import android.content.Context;
-import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
-import android.text.format.Formatter;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.TableLayout;
@@ -22,7 +20,6 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.MediaPlayerProxy;
 import tv.danmaku.ijk.media.example.R;
 
-import static android.content.Context.WIFI_SERVICE;
 
 public class InfoHudViewHolder {
     private TableLayoutBinder mTableLayoutBinder;
@@ -170,10 +167,14 @@ public class InfoHudViewHolder {
                     long bitRate             = mp.getBitRate();
                     long seekLoadDuration    = mp.getSeekLoadDuration();
                     String hasMotion = VideoActivity.getMotionStatus()?"yes":"no";
+                    double pixelDiff = VideoActivity.getPixelDiff()*100.0f;
+
                     setRowValue(R.string.v_cache, String.format(Locale.US, "%s, %s", formatedDurationMilli(videoCachedDuration), formatedSize(videoCachedBytes)));
-                    setRowValue(R.string.a_cache, String.format(Locale.US, "%s, %s", formatedDurationMilli(audioCachedDuration), formatedSize(audioCachedBytes)));
+                    //setRowValue(R.string.a_cache, String.format(Locale.US, "%s, %s", formatedDurationMilli(audioCachedDuration), formatedSize(audioCachedBytes)));
                     setRowValue(R.string.load_cost, String.format(Locale.US, "%d ms", mLoadCost));
                     setRowValue(R.string.has_motion, String.format(Locale.US, "%s", hasMotion));
+                    setRowValue(R.string.pixel_diff, String.format(Locale.US, "%.2f %%", pixelDiff));
+
                     setRowValue(R.string.ip, String.format(Locale.US, "%s", getLocalIpAddress()));
 
                     //setRowValue(R.string.seek_cost, String.format(Locale.US, "%d ms", mSeekCost));

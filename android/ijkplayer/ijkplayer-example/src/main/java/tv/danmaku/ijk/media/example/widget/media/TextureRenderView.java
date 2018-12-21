@@ -37,12 +37,10 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.sharpai.pim.MotionDetection;
 import com.sharpai.pim.MotionDetectionRS;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
@@ -63,11 +61,14 @@ public class TextureRenderView extends TextureView implements IRenderView {
     private Handler mBackgroundHandler;
 
     private static final int PROCESS_SAVED_IMAGE_MSG = 1002;
+    private static final int PROCESS_SAVED_IMAGE_MSG_NOTNOW = 2001;
 
-    private int DETECTION_IMAGE_WIDTH = 1920;
-    private int DETECTION_IMAGE_HEIGHT = 1080;
+    private int DETECTION_IMAGE_WIDTH = 854;
+    private int DETECTION_IMAGE_HEIGHT = 480;
     private int PREVIEW_IMAGE_WIDTH = 1920;
     private int PREVIEW_IMAGE_HEIGHT = 1080;
+
+    private static final int PROCESS_FRAMES_AFTER_MOTION_DETECTED = 3;
 
     private RenderScript mRS = null;
     private MotionDetectionRS mMotionDetection;
@@ -88,17 +89,17 @@ public class TextureRenderView extends TextureView implements IRenderView {
      */
     public void initDetectionContext() {
         String devModel = Build.MODEL;
-        if (devModel != null && devModel.equals("JDN-W09") && PREVIEW_IMAGE_HEIGHT>960) {
+        /*if (devModel != null && devModel.equals("JDN-W09") && PREVIEW_IMAGE_HEIGHT>960) {
             PREVIEW_IMAGE_WIDTH = 1280;
             PREVIEW_IMAGE_HEIGHT = 960;
-        }
+        }*/
 
         DETECTION_IMAGE_HEIGHT = DETECTION_IMAGE_WIDTH * PREVIEW_IMAGE_HEIGHT  / PREVIEW_IMAGE_WIDTH;
         Log.i(TAG,"DETECTION_IMAGE_HEIGHT " + DETECTION_IMAGE_HEIGHT);
 
         mRS = RenderScript.create(mContext);
         mMotionDetection = new MotionDetectionRS(mContext.getSharedPreferences(
-                MotionDetection.PREFS_NAME, Context.MODE_PRIVATE),mRS,
+                MotionDetectionRS.PREFS_NAME, Context.MODE_PRIVATE),mRS,
                 PREVIEW_IMAGE_WIDTH,PREVIEW_IMAGE_HEIGHT,DETECTION_IMAGE_WIDTH,DETECTION_IMAGE_HEIGHT);
         mRSProcessor = new RSImageProcessor(mRS);
         mRSProcessor.initialize(DETECTION_IMAGE_WIDTH, DETECTION_IMAGE_HEIGHT);
@@ -323,7 +324,8 @@ public class TextureRenderView extends TextureView implements IRenderView {
     private SurfaceCallback mSurfaceCallback;
 
     private class SurfaceCallback implements TextureView.SurfaceTextureListener, ISurfaceTextureHost {
-        private long mStartTime = 0;// System.currentTimeMillis();
+        private long mStartTime = 0;
+        private int mSavingCounter = 0;
         private SurfaceTexture mSurfaceTexture;
         private boolean mIsFormatChanged;
         private int mWidth;
@@ -408,19 +410,27 @@ public class TextureRenderView extends TextureView implements IRenderView {
             return mOwnSurfaceTexture;
         }
 
-
-
         private void processFrame(SurfaceTexture surface){
             Bitmap bmp= mWeakRenderView.get().getBitmap();
             boolean bigChanged = mMotionDetection.detect(bmp);
             String filename = "";
             File file = null;
-            VideoActivity.setMotionStatus(bigChanged);
+            VideoActivity.setPixelDiff(mMotionDetection.getPercentageOfDifferentPixels());
             if(!bigChanged){
                 Log.d(TAG,"No Big changes, skip this frame");
-                //bmp.recycle();
-                return;
+
+                if(mSavingCounter > 0){
+                    mSavingCounter--;
+                } else {
+                    //bmp.recycle();
+                    VideoActivity.setMotionStatus(false);
+                    return;
+                }
+            } else {
+                mSavingCounter=PROCESS_FRAMES_AFTER_MOTION_DETECTED;
             }
+
+            VideoActivity.setMotionStatus(true);
             try {
                 file = screenshot.getInstance()
                         .saveScreenshotToPicturesFolder(mContext, bmp, "frame_");
@@ -444,13 +454,12 @@ public class TextureRenderView extends TextureView implements IRenderView {
         }
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
-            boolean needSaveFrame = false;
             long currentTime = System.currentTimeMillis();
+            boolean needSaveFrame = false;
             if(mStartTime == 0) {
                 mStartTime = currentTime;
                 needSaveFrame = true;
-            } else if (currentTime - mStartTime > 300){
+            } else if (currentTime - mStartTime > 200){
                 needSaveFrame = true;
                 mStartTime = currentTime;
             }
