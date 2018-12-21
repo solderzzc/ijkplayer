@@ -96,8 +96,8 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private IMediaPlayer.OnInfoListener mOnInfoListener;
     private int mSeekWhenPrepared;  // recording the seek position while preparing
     private boolean mCanPause = true;
-    private boolean mCanSeekBack = true;
-    private boolean mCanSeekForward = true;
+    private boolean mCanSeekBack = false;
+    private boolean mCanSeekForward = false;
 
     /** Subtitle rendering widget overlaid on top of the video. */
     // private RenderingWidget mSubtitleWidget;
@@ -350,7 +350,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             // we don't set the target state here either, but preserve the
             // target state that was there before.
             mCurrentState = STATE_PREPARING;
-            attachMediaController();
+            //attachMediaController();
         } catch (IOException ex) {
             Log.w(TAG, "Unable to open content: " + mRtspURL, ex);
             mCurrentState = STATE_ERROR;
@@ -367,14 +367,17 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     }
 
     public void setMediaController(IMediaController controller) {
+        /*
         if (mMediaController != null) {
             mMediaController.hide();
         }
         mMediaController = controller;
         attachMediaController();
+        */
     }
 
     private void attachMediaController() {
+        /*
         if (mMediaPlayer != null && mMediaController != null) {
             mMediaController.setMediaPlayer(this);
             View anchorView = this.getParent() instanceof View ?
@@ -382,6 +385,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             mMediaController.setAnchorView(anchorView);
             mMediaController.setEnabled(isInPlaybackState());
         }
+        */
     }
 
     IMediaPlayer.OnVideoSizeChangedListener mSizeChangedListener =
@@ -415,7 +419,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                 mOnPreparedListener.onPrepared(mMediaPlayer);
             }
             if (mMediaController != null) {
-                mMediaController.setEnabled(true);
+                mMediaController.setEnabled(false);
             }
             mVideoWidth = mp.getVideoWidth();
             mVideoHeight = mp.getVideoHeight();
@@ -729,22 +733,26 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        /*
         if (isInPlaybackState() && mMediaController != null) {
             toggleMediaControlsVisiblity();
-        }
+        }*/
         return false;
     }
 
     @Override
     public boolean onTrackballEvent(MotionEvent ev) {
+        /*
         if (isInPlaybackState() && mMediaController != null) {
             toggleMediaControlsVisiblity();
         }
+        */
         return false;
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        /*
         boolean isKeyCodeSupported = keyCode != KeyEvent.KEYCODE_BACK &&
                 keyCode != KeyEvent.KEYCODE_VOLUME_UP &&
                 keyCode != KeyEvent.KEYCODE_VOLUME_DOWN &&
@@ -780,16 +788,18 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                 toggleMediaControlsVisiblity();
             }
         }
-
+        */
         return super.onKeyDown(keyCode, event);
     }
 
     private void toggleMediaControlsVisiblity() {
+        /*
         if (mMediaController.isShowing()) {
             mMediaController.hide();
         } else {
             mMediaController.show();
         }
+        */
     }
 
     @Override
@@ -839,6 +849,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     @Override
     public void seekTo(int msec) {
+        /*
         if (isInPlaybackState()) {
             mSeekStartTime = System.currentTimeMillis();
             mMediaPlayer.seekTo(msec);
@@ -846,6 +857,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         } else {
             mSeekWhenPrepared = msec;
         }
+        */
     }
 
     @Override
