@@ -17,6 +17,8 @@
 
 package tv.danmaku.ijk.media.example.activities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +26,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -46,6 +49,7 @@ import com.sharpai.pim.MotionDetectionRS;
 import org.w3c.dom.Text;
 
 import elanic.in.rsenhancer.processing.RSImageProcessor;
+import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.misc.ITrackInfo;
 import tv.danmaku.ijk.media.example.R;
@@ -70,6 +74,33 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
 
     private Settings mSettings;
     private boolean mBackPressed;
+
+    private long mLastFrameTimeStamp = 0L;
+    private Handler mHeartbeatHandler = null;
+    private Runnable mHeartbeatRunnable = new Runnable() {
+        @Override
+        public void run() {
+            long cur = System.currentTimeMillis();
+            if (mLastFrameTimeStamp > 0 && cur - mLastFrameTimeStamp > 5000) {
+                Toast.makeText(VideoActivity.this, "frame timespan exceeds 5 seconds, exit!", Toast.LENGTH_LONG).show();
+
+                quitAndStartLater();
+            }
+
+            mHeartbeatHandler.postDelayed(mHeartbeatRunnable, 5000);
+        }
+    };
+
+    private void quitAndStartLater() {
+        Intent intent = new Intent(VideoActivity.this, VideoActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(VideoActivity.this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager mgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis()+5000, pendingIntent);
+
+        finish();
+        System.exit(2);
+    }
 
     private static boolean mHasMotion;
 
@@ -137,7 +168,22 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
             finish();
             return;
         }
+        mVideoView.setVideoFrameUpdateListener(new IjkVideoView.VideoFrameUpdateListener() {
+            @Override
+            public void onVideoFrameUpdate(long tm) {
+                mLastFrameTimeStamp = tm;
+            }
+        });
+        mVideoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(IMediaPlayer mp, int what, int extra) {
+                quitAndStartLater();
+                return false;
+            }
+        });
         mVideoView.start();
+
+        mHeartbeatHandler = new Handler();
     }
 
     @Override
@@ -145,6 +191,13 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         mBackPressed = true;
 
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mHeartbeatHandler.postDelayed(mHeartbeatRunnable, 5000);
     }
 
     @Override
@@ -159,6 +212,10 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
             mVideoView.enterBackground();
         }
         IjkMediaPlayer.native_profileEnd();
+        if (mHeartbeatHandler != null) {
+            mHeartbeatHandler.removeCallbacks(mHeartbeatRunnable);
+            mLastFrameTimeStamp = 0;
+        }
     }
 
     @Override

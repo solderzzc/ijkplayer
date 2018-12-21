@@ -24,6 +24,7 @@ import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -121,6 +122,16 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private long mSeekEndTime = 0;
 
     private TextView subtitleDisplay;
+
+    private VideoFrameUpdateListener mVideoFrameUpdateListener = null;
+
+    public interface VideoFrameUpdateListener {
+        public void onVideoFrameUpdate(long tm);
+    }
+
+    public void setVideoFrameUpdateListener(VideoFrameUpdateListener l) {
+        mVideoFrameUpdateListener = l;
+    }
 
     public IjkVideoView(Context context) {
         super(context);
@@ -222,6 +233,14 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     renderView.setVideoSampleAspectRatio(mMediaPlayer.getVideoSarNum(), mMediaPlayer.getVideoSarDen());
                     renderView.setAspectRatio(mCurrentAspectRatio);
                 }
+                renderView.setFrameUpdateListener(new TextureRenderView.FrameUpdateListener() {
+                    @Override
+                    public void onFrameUpdate(long currentTime) {
+                        if (mVideoFrameUpdateListener != null) {
+                            mVideoFrameUpdateListener.onVideoFrameUpdate(currentTime);
+                        }
+                    }
+                });
                 setRenderView(renderView);
                 break;
             }
