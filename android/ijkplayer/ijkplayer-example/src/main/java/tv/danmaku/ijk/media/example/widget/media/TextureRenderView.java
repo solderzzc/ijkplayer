@@ -73,6 +73,16 @@ public class TextureRenderView extends TextureView implements IRenderView {
     private MotionDetectionRS mMotionDetection;
     private RSImageProcessor mRSProcessor;
 
+    private FrameUpdateListener mFrameUpdateListener = null;
+
+    public interface FrameUpdateListener {
+        public void onFrameUpdate(long currentTime);
+    }
+
+    public void setFrameUpdateListener(FrameUpdateListener l) {
+        mFrameUpdateListener = l;
+    }
+
     /**
      * Initializes the UI and initiates the creation of a motion detector.
      */
@@ -401,7 +411,6 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
 
         private void processFrame(SurfaceTexture surface){
-
             Bitmap bmp= mWeakRenderView.get().getBitmap();
             boolean bigChanged = mMotionDetection.detect(bmp);
             String filename = "";
@@ -436,7 +445,6 @@ public class TextureRenderView extends TextureView implements IRenderView {
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 
-            Log.d(TAG, "onSurfaceTextureUpdated");
             boolean needSaveFrame = false;
             long currentTime = System.currentTimeMillis();
             if(mStartTime == 0) {
@@ -451,6 +459,9 @@ public class TextureRenderView extends TextureView implements IRenderView {
                 processFrame(surface);
                 long end = System.currentTimeMillis();
                 Log.v(TAG,"time diff is "+(end-start));
+            }
+            if (mFrameUpdateListener != null) {
+                mFrameUpdateListener.onFrameUpdate(currentTime);
             }
         }
 
