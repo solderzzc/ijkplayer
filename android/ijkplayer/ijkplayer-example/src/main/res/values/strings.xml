@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ijkmediademo</string>
+    <string name="app_name">SharpAI</string>
     <string name="camera_app_name">CameraScanner</string>
     <string name="video_app_name">VideoCapture</string>
 
@@ -30,6 +30,8 @@
     <string name="seek_load_cost">seek_load_cost</string>
     <string name="tcp_speed">tcp_speed</string>
     <string name="bit_rate">bit_rate</string>
+
+    <string name="hint_password">input camera password</string>
 
     <string name="media_information">Media Information</string>
     <string name="mi_player">Player</string>
@@ -79,5 +81,6 @@
     <string name="dahuaip">DaHuaCameraIP</string>
     <string name="ip_address">IP Address</string>
     <string name="start">开始播放</string>
+    <string name="scanning_camera">Scanning Camera</string>
 
 </resources>

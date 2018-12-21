@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rl_camera_list"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:padding="15dp">
 
     <TextView
         android:id="@+id/tv_ipaddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="35dp"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"/>
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp" />
+
+    <TextView
+        android:id="@+id/tv_sn"
+        android:layout_width="175dp"
+        android:layout_height="35dp"
+        android:layout_below="@+id/iv_current"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="194dp"
+        android:layout_marginTop="0dp" />
 
     <ImageView
         android:id="@+id/iv_current"

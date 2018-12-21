@@ -21,6 +21,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,12 +49,18 @@ public class SetupActivity extends AppCompatActivity {
     private static final int REQUESTCODE_PERMISSION_STORAGE = 1234;
     WIFIConfigurationModule mConfigModule;
     final Set<String> inforSet = new HashSet<String>();
+    SharedPreferences mSharedPreferences;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, SetupActivity.class);
         return intent;
     }
-
+    private String getSavedUsername(){
+        return mSharedPreferences.getString("cameraUsername","");
+    }
+    private String getSavedPassword(){
+        return mSharedPreferences.getString("cameraPassword","");
+    }
     public static void intentTo(Context context) {
         context.startActivity(newIntent(context));
     }
@@ -65,6 +72,8 @@ public class SetupActivity extends AppCompatActivity {
                     " SN : " + new String(device_net_info_ex.szSerialNo).trim();
             String ipaddress = new String(device_net_info_ex.szIP).trim();
             String SN = new String(device_net_info_ex.szSerialNo).trim();
+
+            String savedSN = mSharedPreferences.getString("cameraSN","");
             ///Filter repeated and only show IPV4
             ///过滤重复的以及只显示IPV4
             if((!inforSet.contains(temp)) && (device_net_info_ex.iIPVersion == 4)){
@@ -72,8 +81,8 @@ public class SetupActivity extends AppCompatActivity {
                 //Message msg = mHandler.obtainMessage(UPDATE_SEARCH_DEV_INFOR);
                 //msg.obj = temp;
                 //mHandler.sendMessage(msg);
-                if(SN.equals("ND021711020155")){
-                    String videoUrl = "rtsp://admin:abc123@"+ipaddress+":554/cam/realmonitor?channel=1&subtype=0";
+                if(SN.equals(savedSN)){
+                    String videoUrl = "rtsp://"+getSavedUsername()+":"+getSavedPassword()+"@"+ipaddress+":554/cam/realmonitor?channel=1&subtype=0";
                     VideoActivity.intentTo(mContext, videoUrl);
                 }
             }
@@ -83,8 +92,10 @@ public class SetupActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mSharedPreferences = getSharedPreferences(CameraScanActivity.CAMERAIPKEY, Context.MODE_PRIVATE);
         setContentView(R.layout.activity_setup);
-        final Button button = (Button) findViewById(R.id.button);
+        //final Button button = (Button) findViewById(R.id.button);
         mContext = this;
         ensureStoragePermissionGranted();
         /// Initializing the NetSDKLib is important and necessary to ensure that
@@ -97,19 +108,19 @@ public class SetupActivity extends AppCompatActivity {
         NetSDKLib.getInstance().openLog(file);
         INetSDK.StartSearchDevices(callback);
         //mConfigModule.StartSearchDevices(callback);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        //button.setOnClickListener(new View.OnClickListener() {
+        //    public void onClick(View v) {
                 // Perform action on click
                 // currentContext.startActivity(activityChangeIntent);
-                EditText edit = (EditText)findViewById(R.id.ipAddress);
-                String ip = edit.getText().toString();
+        //        EditText edit = (EditText)findViewById(R.id.ipAddress);
+        //        String ip = edit.getText().toString();
 
-                Log.d("Setup","on click: "+ip);
-                String videoUrl = "rtsp://admin:abc123@"+ip+":554/cam/realmonitor?channel=1&subtype=0";
-                VideoActivity.intentTo(mContext, videoUrl);
+        //        Log.d("Setup","on click: "+ip);
+        //        String videoUrl = "rtsp://admin:abc123@"+ip+":554/cam/realmonitor?channel=1&subtype=0";
+        //        VideoActivity.intentTo(mContext, videoUrl);
                 //PresentActivity.this.startActivity(activityChangeIntent);
-            }
-        });
+        //    }
+        //});
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
 

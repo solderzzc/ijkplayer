@@ -120,6 +120,14 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
     public static void setMotionStatus(boolean motion){
         mHasMotion = motion;
     }
+    public String getSavedCameraURL(){
+
+        SharedPreferences sp = getSharedPreferences(CameraScanActivity.CAMERAIPKEY, Context.MODE_PRIVATE);
+        mVideoURL = sp.getString("videoURL", "");
+
+        return "";
+        //String videoUrl = "rtsp://admin:abc12345@"+ci.getIp()+":554/cam/realmonitor?channel=1&subtype=0";
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,14 +136,12 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         mSettings = new Settings(this);
 
         // handle arguments
-        //mVideoURL = getIntent().getStringExtra("videoUrl");
-        SharedPreferences sp = getSharedPreferences(CameraScanActivity.CAMERAIPKEY, Context.MODE_PRIVATE);
-        mVideoURL = sp.getString("videoURL", "");
-        if (TextUtils.isEmpty(mVideoURL)) {
+        mVideoURL = getIntent().getStringExtra("videoUrl");
+        /*if (TextUtils.isEmpty(mVideoURL)) {
             Toast.makeText(this, "Camera IP is not set, please scan and set it first", Toast.LENGTH_LONG).show();
             finish();
             return;
-        }
+        }*/
 
         // init UI
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

@@ -4,33 +4,11 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/start" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent" >
-        <TextView
-            android:id="@+id/textIP"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:text="@string/dahuaip" />
-
-        <EditText
-            android:id="@+id/ipAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="text" />
-    </LinearLayout>
-
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="236dp"
+        android:layout_weight="1"
+        android:text="@string/scanning_camera"
+        android:textAppearance="@android:style/TextAppearance.Widget.PopupMenu.Large" />
 </LinearLayout>
