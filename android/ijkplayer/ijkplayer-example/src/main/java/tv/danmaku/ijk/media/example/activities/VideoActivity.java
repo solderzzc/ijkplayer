@@ -19,6 +19,7 @@ package tv.danmaku.ijk.media.example.activities;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +41,9 @@ import android.view.ViewGroup;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -69,31 +73,31 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
 
     private long mLastFrameTimeStamp = 0L;
 
-    private Handler mHeartbeatHandler = null;
-    private Runnable mHeartbeatRunnable = new Runnable() {
-        @Override
-        public void run() {
-            long cur = System.currentTimeMillis();
-            if (mLastFrameTimeStamp > 0 && cur - mLastFrameTimeStamp > 5000) {
-                Toast.makeText(VideoActivity.this, "frame timespan exceeds 5 seconds, exit!", Toast.LENGTH_LONG).show();
-
-                quitAndStartLater();
-            }
-
-            mHeartbeatHandler.postDelayed(mHeartbeatRunnable, 5000);
-        }
-    };
     private void quitAndStartLater() {
         Intent intent = new Intent(VideoActivity.this, VideoActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(VideoActivity.this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        //PendingIntent pendingIntent = PendingIntent.getActivity(VideoActivity.this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        Intent resultIntent = new Intent(this, SetupActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent pendingIntent =
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
         AlarmManager mgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+
         mgr.set(AlarmManager.RTC, System.currentTimeMillis()+15000, pendingIntent);
 
         finish();
         System.exit(2);
     }
-
+    public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
+        public ExceptionHandler() {
+        }
+        @Override
+        public void uncaughtException(Thread thread, Throwable ex) {
+            quitAndStartLater();
+        }
+    }
     private static boolean mHasMotion;
     private static double mPixelDiff;
 
@@ -131,6 +135,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
         setContentView(R.layout.activity_player);
 
         mSettings = new Settings(this);
@@ -171,7 +176,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
             mVideoView.setVideoRTSP(mVideoURL);
         else {
             Log.e(TAG, "Null Data Source\n");
-            finish();
+            quitAndStartLater();
             return;
         }
         mVideoView.setVideoFrameUpdateListener(new IjkVideoView.VideoFrameUpdateListener() {
@@ -189,7 +194,19 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         });
         mVideoView.start();
 
-        mHeartbeatHandler = new Handler();
+        Timer myTimer = new Timer();
+        myTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                long cur = System.currentTimeMillis();
+                if (mLastFrameTimeStamp > 0 && cur - mLastFrameTimeStamp > 5000) {
+                    Toast.makeText(VideoActivity.this, "frame timespan exceeds 5 seconds, exit!", Toast.LENGTH_LONG).show();
+
+                    quitAndStartLater();
+                }
+            }
+
+        }, 10000, 10000);
     }
 
     @Override
@@ -202,8 +219,6 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
     @Override
     protected void onStart() {
         super.onStart();
-
-        mHeartbeatHandler.postDelayed(mHeartbeatRunnable, 5000);
     }
 
     @Override
@@ -218,10 +233,6 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
             mVideoView.enterBackground();
         }
         IjkMediaPlayer.native_profileEnd();
-        if (mHeartbeatHandler != null) {
-            mHeartbeatHandler.removeCallbacks(mHeartbeatRunnable);
-            mLastFrameTimeStamp = 0;
-        }
     }
 
     @Override

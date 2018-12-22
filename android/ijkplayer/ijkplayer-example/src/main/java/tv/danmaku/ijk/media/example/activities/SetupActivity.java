@@ -19,6 +19,9 @@ package tv.danmaku.ijk.media.example.activities;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +35,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.company.NetSDK.CB_fSearchDevicesCB;
 import com.company.NetSDK.DEVICE_NET_INFO_EX;
@@ -41,6 +45,8 @@ import com.dahuatech.netsdk.common.WIFIConfigurationModule;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import tv.danmaku.ijk.media.example.R;
 
@@ -50,6 +56,7 @@ public class SetupActivity extends AppCompatActivity {
     WIFIConfigurationModule mConfigModule;
     final Set<String> inforSet = new HashSet<String>();
     SharedPreferences mSharedPreferences;
+    private boolean mConnectedToCamera=false;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, SetupActivity.class);
@@ -63,6 +70,26 @@ public class SetupActivity extends AppCompatActivity {
     }
     public static void intentTo(Context context) {
         context.startActivity(newIntent(context));
+    }
+
+    public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
+        public ExceptionHandler() {
+        }
+        @Override
+        public void uncaughtException(Thread thread, Throwable ex) {
+            quitAndStartLater();
+        }
+    }
+    private void quitAndStartLater() {
+        Intent intent = new Intent(SetupActivity.this, SetupActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(SetupActivity.this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager mgr = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis()+15000, pendingIntent);
+
+        finish();
+        System.exit(2);
     }
     private CB_fSearchDevicesCB callback = new  CB_fSearchDevicesCB(){
 
@@ -83,6 +110,7 @@ public class SetupActivity extends AppCompatActivity {
                 //mHandler.sendMessage(msg);
                 if(SN.equals(savedSN)){
                     String videoUrl = "rtsp://"+getSavedUsername()+":"+getSavedPassword()+"@"+ipaddress+":554/cam/realmonitor?channel=1&subtype=0";
+                    mConnectedToCamera = true;
                     VideoActivity.intentTo(mContext, videoUrl);
                 }
             }
@@ -92,6 +120,8 @@ public class SetupActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
 
         mSharedPreferences = getSharedPreferences(CameraScanActivity.CAMERAIPKEY, Context.MODE_PRIVATE);
         setContentView(R.layout.activity_setup);
@@ -128,6 +158,16 @@ public class SetupActivity extends AppCompatActivity {
         //FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         //transaction.replace(R.id.body, newFragment);
         //transaction.commit();
+
+        Timer myTimer = new Timer();
+        myTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(mConnectedToCamera == false){
+                    quitAndStartLater();
+                }
+            }
+        }, 10000, 10000);
     }
 
     /** For processes to access shared internal storage (/sdcard) we need this permission. */
