@@ -112,6 +112,8 @@ public class SetupActivity extends AppCompatActivity {
                     String videoUrl = "rtsp://"+getSavedUsername()+":"+getSavedPassword()+"@"+ipaddress+":554/cam/realmonitor?channel=1&subtype=0";
                     mConnectedToCamera = true;
                     VideoActivity.intentTo(mContext, videoUrl);
+                    finish();
+                    System.exit(0);
                 }
             }
             Log.d("Device","Got Devices"+temp);
