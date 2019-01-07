@@ -338,6 +338,8 @@ public class TextureRenderView extends TextureView implements IRenderView {
         private WeakReference<TextureRenderView> mWeakRenderView;
         private Map<IRenderCallback, Object> mRenderCallbackMap = new ConcurrentHashMap<IRenderCallback, Object>();
 
+        private long mLastBigChangeTime = 0L;
+
 
         public SurfaceCallback(@NonNull TextureRenderView renderView) {
             mWeakRenderView = new WeakReference<TextureRenderView>(renderView);
@@ -416,6 +418,14 @@ public class TextureRenderView extends TextureView implements IRenderView {
             String filename = "";
             File file = null;
             VideoActivity.setPixelDiff(mMotionDetection.getPercentageOfDifferentPixels());
+
+            // if no bigchange, but timespan between two uploaded frames is larger than 30s, treat it as big change
+            if (!bigChanged) {
+                long tm = System.currentTimeMillis();
+                if (tm - mLastBigChangeTime > 30*1000) {
+                    bigChanged = true;
+                }
+            }
             if(!bigChanged){
                 Log.d(TAG,"No Big changes, skip this frame");
 
@@ -428,6 +438,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
                 }
             } else {
                 mSavingCounter=PROCESS_FRAMES_AFTER_MOTION_DETECTED;
+                mLastBigChangeTime = System.currentTimeMillis();
             }
 
             VideoActivity.setMotionStatus(true);
