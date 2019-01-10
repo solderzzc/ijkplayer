@@ -77,6 +77,7 @@ public class SetupActivity extends AppCompatActivity {
         }
         @Override
         public void uncaughtException(Thread thread, Throwable ex) {
+            ex.printStackTrace();
             quitAndStartLater();
         }
     }
@@ -89,7 +90,7 @@ public class SetupActivity extends AppCompatActivity {
         mgr.set(AlarmManager.RTC, System.currentTimeMillis()+15000, pendingIntent);
 
         finish();
-        System.exit(2);
+        System.exit(3);
     }
     private CB_fSearchDevicesCB callback = new  CB_fSearchDevicesCB(){
 
@@ -169,7 +170,7 @@ public class SetupActivity extends AppCompatActivity {
                     quitAndStartLater();
                 }
             }
-        }, 10000, 10000);
+        }, 60000, 10000);
     }
 
     /** For processes to access shared internal storage (/sdcard) we need this permission. */

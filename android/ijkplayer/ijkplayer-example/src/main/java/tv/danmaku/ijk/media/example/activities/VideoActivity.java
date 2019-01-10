@@ -95,6 +95,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         }
         @Override
         public void uncaughtException(Thread thread, Throwable ex) {
+            ex.printStackTrace();
             quitAndStartLater();
         }
     }
@@ -206,7 +207,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
                 }
             }
 
-        }, 10000, 10000);
+        }, 20000, 10000);
     }
 
     @Override
