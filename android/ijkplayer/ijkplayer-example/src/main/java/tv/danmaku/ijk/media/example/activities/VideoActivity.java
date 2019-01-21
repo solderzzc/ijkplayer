@@ -59,10 +59,11 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
     private static final String TAG = "VideoActivity";
 
     private String mVideoURL;
-    private Uri    mVideoUri;
+    private String mVideoURL2;
 
     private AndroidMediaController mMediaController;
     private IjkVideoView mVideoView;
+    private IjkVideoView mVideoView2;
     private TextView mToastTextView;
     private TableLayout mHudView;
     private DrawerLayout mDrawerLayout;
@@ -96,6 +97,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         @Override
         public void uncaughtException(Thread thread, Throwable ex) {
             ex.printStackTrace();
+            Log.w("##RDBG", "uncaughtException, ex:" + ex.toString());
             quitAndStartLater();
         }
     }
@@ -149,6 +151,8 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
             return;
         }*/
 
+        mVideoURL2 = "rtsp://admin:abc12345@192.168.31.222:554/cam/realmonitor?channel=1&subtype=0";
+
         // init UI
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -189,11 +193,40 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         mVideoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(IMediaPlayer mp, int what, int extra) {
+                Log.w("##RDBG", "onErrorListener: " + what);
                 quitAndStartLater();
                 return false;
             }
         });
         mVideoView.start();
+
+        mVideoView2 = (IjkVideoView) findViewById(R.id.video_view2);
+        mVideoView2.setMediaController(mMediaController);
+        mVideoView2.setHudView(mHudView);
+
+        // prefer mVideoURL
+        if (mVideoURL2 != null)
+            mVideoView2.setVideoRTSP(mVideoURL2);
+        else {
+            Log.e(TAG, "Null Data Source\n");
+            quitAndStartLater();
+            return;
+        }
+        mVideoView2.setVideoFrameUpdateListener(new IjkVideoView.VideoFrameUpdateListener() {
+            @Override
+            public void onVideoFrameUpdate(long tm) {
+                //mLastFrameTimeStamp = tm;
+            }
+        });
+        mVideoView2.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(IMediaPlayer mp, int what, int extra) {
+                Log.w("##RDBG", "onErrorListener: " + what);
+                quitAndStartLater();
+                return false;
+            }
+        });
+        mVideoView2.start();
 
         Timer myTimer = new Timer();
         myTimer.schedule(new TimerTask() {
@@ -203,6 +236,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
                 if (mLastFrameTimeStamp > 0 && cur - mLastFrameTimeStamp > 5000) {
                     Toast.makeText(VideoActivity.this, "frame timespan exceeds 5 seconds, exit!", Toast.LENGTH_LONG).show();
 
+                    Log.w("##RDBG", "frame timespan exceeds 5 seconds");
                     quitAndStartLater();
                 }
             }
@@ -230,8 +264,13 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
             mVideoView.stopPlayback();
             mVideoView.release(true);
             mVideoView.stopBackgroundPlay();
+
+            mVideoView2.stopPlayback();
+            mVideoView2.release(true);
+            mVideoView2.stopBackgroundPlay();
         } else {
             mVideoView.enterBackground();
+            mVideoView2.enterBackground();
         }
         IjkMediaPlayer.native_profileEnd();
     }

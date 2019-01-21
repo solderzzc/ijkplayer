@@ -13,11 +13,28 @@
         android:layout_height="match_parent"
         android:background="#0099cc">
 
-        <tv.danmaku.ijk.media.example.widget.media.IjkVideoView
-            android:id="@+id/video_view"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"></tv.danmaku.ijk.media.example.widget.media.IjkVideoView>
+            android:layout_height="match_parent">
+
+            <tv.danmaku.ijk.media.example.widget.media.IjkVideoView
+                android:id="@+id/video_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_gravity="center"></tv.danmaku.ijk.media.example.widget.media.IjkVideoView>
+
+            <tv.danmaku.ijk.media.example.widget.media.IjkVideoView
+                android:id="@+id/video_view2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_gravity="center"></tv.danmaku.ijk.media.example.widget.media.IjkVideoView>
+
+        </LinearLayout>
+
+
 
         <TextView
             android:id="@+id/toast_text_view"
