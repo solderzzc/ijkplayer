@@ -22,6 +22,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -520,6 +521,9 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
             } catch (Exception e) {
                 e.printStackTrace();
+
+                //delete all jpg file in Download dir when disk is full
+                deleteAllCapturedPics();
             }
 
             //bitmap.recycle();
@@ -605,6 +609,34 @@ public class TextureRenderView extends TextureView implements IRenderView {
             Log.d(TAG, "didDetachFromWindow()");
             mDidDetachFromWindow = true;
         }
+    }
+
+    private Thread mDeletePicsThread = null;
+
+    private void deleteAllCapturedPics() {
+        if (mDeletePicsThread != null) {
+            return;
+        }
+
+        mDeletePicsThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    File f = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                    File[] files = f.listFiles();
+
+                    for (File fPic: files) {
+                        if (fPic.isFile() && fPic.getPath().endsWith(".jpg")) {
+                            fPic.delete();
+                        }
+                    }
+                }
+                catch (Exception ex) {}
+
+                mDeletePicsThread = null;
+            }
+        });
+        mDeletePicsThread.start();
     }
 
     //--------------------
