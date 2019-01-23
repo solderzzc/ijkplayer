@@ -37,6 +37,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.sharpai.detector.Detector;
 import com.sharpai.pim.MotionDetectionRS;
 
 import java.io.File;
@@ -76,6 +77,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
     private FrameUpdateListener mFrameUpdateListener = null;
 
+    private Detector mDetector = null;
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
     }
@@ -103,6 +105,8 @@ public class TextureRenderView extends TextureView implements IRenderView {
                 PREVIEW_IMAGE_WIDTH,PREVIEW_IMAGE_HEIGHT,DETECTION_IMAGE_WIDTH,DETECTION_IMAGE_HEIGHT);
         mRSProcessor = new RSImageProcessor(mRS);
         mRSProcessor.initialize(DETECTION_IMAGE_WIDTH, DETECTION_IMAGE_HEIGHT);
+
+        mDetector = new Detector(mContext);
     }
     class MyCallback implements Handler.Callback {
 
@@ -442,6 +446,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
             }
 
             VideoActivity.setMotionStatus(true);
+            mDetector.processImage(bmp);
             try {
                 file = screenshot.getInstance()
                         .saveScreenshotToPicturesFolder(mContext, bmp, "frame_");
