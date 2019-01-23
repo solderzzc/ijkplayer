@@ -465,6 +465,8 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                //delete all jpg file in Download dir when disk is full
+                deleteAllCapturedPics();
             }
 
             //bitmap.recycle();
