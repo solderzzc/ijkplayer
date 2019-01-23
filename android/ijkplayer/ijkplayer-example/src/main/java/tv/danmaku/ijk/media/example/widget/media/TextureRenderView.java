@@ -417,8 +417,67 @@ public class TextureRenderView extends TextureView implements IRenderView {
             Log.d(TAG, "onSurfaceTextureDestroyed: destroy: " + mOwnSurfaceTexture);
             return mOwnSurfaceTexture;
         }
-
         private void processFrame(SurfaceTexture surface){
+            Bitmap bmp= mWeakRenderView.get().getBitmap();
+            String filename = "";
+            File file = null;
+            int personNum = 0;
+            boolean bigChanged = false;
+
+            List<Classifier.Recognition> result =  mDetector.processImage(bmp);
+
+            personNum = result.size();
+            VideoActivity.setNumberOfPerson(personNum);
+
+            // if no bigchange, but timespan between two uploaded frames is larger than 30s, treat it as big change
+            if (personNum<=0) {
+                long tm = System.currentTimeMillis();
+                if (tm - mLastBigChangeTime > 30*1000) {
+                    bigChanged = true;
+                }
+            } else {
+                bigChanged = true;
+            }
+            if(!bigChanged){
+                Log.d(TAG,"No person detected, skip this frame");
+
+                if(mSavingCounter > 0){
+                    mSavingCounter--;
+                } else {
+                    //bmp.recycle();
+                    VideoActivity.setMotionStatus(false);
+                    VideoActivity.setNumberOfPerson(0);
+                    return;
+                }
+            } else {
+                mSavingCounter=PROCESS_FRAMES_AFTER_MOTION_DETECTED;
+                mLastBigChangeTime = System.currentTimeMillis();
+            }
+
+            VideoActivity.setMotionStatus(true);
+
+            try {
+                file = screenshot.getInstance()
+                        .saveScreenshotToPicturesFolder(mContext, bmp, "frame_");
+
+                filename = file.getAbsolutePath();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //bitmap.recycle();
+            //bitmap = null;
+            if(filename.equals("")){
+                return;
+            }
+            if(file == null){
+                return;
+            }
+            mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
+            return;
+        }
+        private void _processFrame(SurfaceTexture surface){
             Bitmap bmp= mWeakRenderView.get().getBitmap();
             boolean bigChanged = mMotionDetection.detect(bmp);
             String filename = "";

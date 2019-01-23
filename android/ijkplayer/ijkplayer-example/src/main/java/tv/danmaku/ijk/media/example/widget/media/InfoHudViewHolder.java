@@ -170,22 +170,22 @@ public class InfoHudViewHolder {
                     setRowValue(R.string.fps, String.format(Locale.US, "%.2f / %.2f", fpsDecode, fpsOutput));
 
                     long videoCachedDuration = mp.getVideoCachedDuration();
-                    long audioCachedDuration = mp.getAudioCachedDuration();
+                    //long audioCachedDuration = mp.getAudioCachedDuration();
                     long videoCachedBytes    = mp.getVideoCachedBytes();
-                    long audioCachedBytes    = mp.getAudioCachedBytes();
-                    long tcpSpeed            = mp.getTcpSpeed();
-                    long bitRate             = mp.getBitRate();
-                    long seekLoadDuration    = mp.getSeekLoadDuration();
-                    String hasMotion = VideoActivity.getMotionStatus()?"yes":"no";
+                    //long audioCachedBytes    = mp.getAudioCachedBytes();
+                    //long tcpSpeed            = mp.getTcpSpeed();
+                    //long bitRate             = mp.getBitRate();
+                    //long seekLoadDuration    = mp.getSeekLoadDuration();
+                    //String hasMotion = VideoActivity.getMotionStatus()?"yes":"no";
                     int personNum = VideoActivity.getPersonNum();
-                    double pixelDiff = VideoActivity.getPixelDiff()*100.0f;
+                    //double pixelDiff = VideoActivity.getPixelDiff()*100.0f;
 
                     setRowValue(R.string.v_cache, String.format(Locale.US, "%s, %s", formatedDurationMilli(videoCachedDuration), formatedSize(videoCachedBytes)));
                     //setRowValue(R.string.a_cache, String.format(Locale.US, "%s, %s", formatedDurationMilli(audioCachedDuration), formatedSize(audioCachedBytes)));
                     setRowValue(R.string.load_cost, String.format(Locale.US, "%d ms", mLoadCost));
                     setRowValue(R.string.person_num, String.format(Locale.US, "%d", personNum));
-                    setRowValue(R.string.has_motion, String.format(Locale.US, "%s", hasMotion));
-                    setRowValue(R.string.pixel_diff, String.format(Locale.US, "%.2f %%", pixelDiff));
+                    //setRowValue(R.string.has_motion, String.format(Locale.US, "%s", hasMotion));
+                    //setRowValue(R.string.pixel_diff, String.format(Locale.US, "%.2f %%", pixelDiff));
 
                     setRowValue(R.string.ip, String.format(Locale.US, "%s", getLocalIpAddress()));
                     setRowValue(R.string.camera_ip, String.format(Locale.US, "%s", getCameraIP()));
