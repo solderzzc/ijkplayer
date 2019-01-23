@@ -100,6 +100,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         }
     }
     private static boolean mHasMotion;
+    private static int mPersonNum=0;
     private static double mPixelDiff;
 
     public static Intent newIntent(Context context, String videoUrl) {
@@ -121,9 +122,15 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
     public static boolean getMotionStatus(){
         return mHasMotion;
     }
+    public static int getPersonNum(){
+        return mPersonNum;
+    }
 
     public static void setMotionStatus(boolean motion){
         mHasMotion = motion;
+    }
+    public static void setNumberOfPerson(int number){
+        mPersonNum = number;
     }
     public String getSavedCameraURL(){
 

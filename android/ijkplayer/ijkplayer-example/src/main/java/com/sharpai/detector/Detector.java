@@ -119,7 +119,7 @@ public class Detector {
   }
 
 
-  public void processImage(Bitmap rgbFrameBitmap) {
+  public List<Classifier.Recognition> processImage(Bitmap rgbFrameBitmap) {
     ++timestamp;
     final long currTimestamp = timestamp;
 
@@ -157,12 +157,16 @@ public class Detector {
       final RectF location = result.getLocation();
       if (location != null && result.getConfidence() >= minimumConfidence) {
         Log.i(TAG,"Result is "+result.toString());
-        canvas.drawRect(location, paint);
+        if(result.getTitle().equals("person")){
 
-        cropToFrameTransform.mapRect(location);
-        result.setLocation(location);
-        mappedRecognitions.add(result);
+          canvas.drawRect(location, paint);
+
+          cropToFrameTransform.mapRect(location);
+          result.setLocation(location);
+          mappedRecognitions.add(result);
+        }
       }
     }
+    return mappedRecognitions;
   }
 }

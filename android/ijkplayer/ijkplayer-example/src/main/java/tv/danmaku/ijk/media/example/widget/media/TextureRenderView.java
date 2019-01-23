@@ -37,6 +37,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.sharpai.detector.Classifier;
 import com.sharpai.detector.Detector;
 import com.sharpai.pim.MotionDetectionRS;
 
@@ -44,6 +45,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -438,6 +440,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
                 } else {
                     //bmp.recycle();
                     VideoActivity.setMotionStatus(false);
+                    VideoActivity.setNumberOfPerson(0);
                     return;
                 }
             } else {
@@ -446,7 +449,10 @@ public class TextureRenderView extends TextureView implements IRenderView {
             }
 
             VideoActivity.setMotionStatus(true);
-            mDetector.processImage(bmp);
+            List<Classifier.Recognition> result =  mDetector.processImage(bmp);
+
+            VideoActivity.setNumberOfPerson(result.size());
+
             try {
                 file = screenshot.getInstance()
                         .saveScreenshotToPicturesFolder(mContext, bmp, "frame_");
