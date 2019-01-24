@@ -81,6 +81,9 @@ public class Detector {
   private Matrix frameToCropTransform;
   private Matrix cropToFrameTransform;
 
+  public long getTimestamp(){
+    return timestamp;
+  }
   public Detector(Context context) {
 
     int cropSize = TF_OD_API_INPUT_SIZE;

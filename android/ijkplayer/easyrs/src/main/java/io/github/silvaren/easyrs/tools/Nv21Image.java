@@ -25,7 +25,43 @@ public class Nv21Image {
         this.width = width;
         this.height = height;
     }
+    /**
+     * Converts an android Bitmap image to NV21 format. If the image has odd dimensions the
+     * conversion process will round down each dimension to its closest even integer.
+     * @param dstArray is an optional byte array to receive the converted NV21 data. It
+     *                 must be (1.5 * number_of_pixels) bytes long. If null is passed,
+     *                 a new byte array will be created and returned.
+     */
+    public static byte[] getLuminanceFromBitmap(RenderScript rs, Bitmap bitmap, byte[] dstArray){
 
+        long startTime = System.currentTimeMillis();
+
+        Bitmap croppedBitmap = bitmap;
+
+        if (bitmap.getWidth() % 2 > 0 || bitmap.getHeight() % 2 > 0) {
+            croppedBitmap = Bitmap.createBitmap(bitmap, 0, 0, (bitmap.getWidth() / 2) * 2,
+                    (bitmap.getHeight() / 2) * 2);
+        }
+        Bitmap yuvImage = ColorMatrix.applyMatrix(rs, croppedBitmap,
+                ColorMatrixParams.rgbToNv21Matrix(), new Float4(0.0f, 0.5f, 0.5f, 0.0f));
+
+        RSToolboxContext bitmapRSContext = RSToolboxContext.createFromBitmap(rs, yuvImage);
+        ScriptC_channel channelScript = new ScriptC_channel(bitmapRSContext.rs);
+        Type outType = Type.createXY(bitmapRSContext.rs, Element.U8(bitmapRSContext.rs),
+                yuvImage.getWidth(), yuvImage.getHeight());
+        Allocation aout = Allocation.createTyped(bitmapRSContext.rs, outType);
+        channelScript.forEach_channelR(bitmapRSContext.ain, aout);
+        int size = croppedBitmap.getWidth() * croppedBitmap.getHeight();
+
+        byte[] yByteArray;
+        if (dstArray == null)
+            yByteArray = new byte[size + size / 2];
+        else
+            yByteArray = dstArray;
+        aout.copyTo(yByteArray);
+        Log.d("NV21", "Conversion to NV21: " + (System.currentTimeMillis() - startTime) + "ms");
+        return yByteArray;
+    }
     /**
      * Converts an android Bitmap image to NV21 format. If the image has odd dimensions the
      * conversion process will round down each dimension to its closest even integer.

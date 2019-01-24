@@ -20,6 +20,7 @@ package tv.danmaku.ijk.media.example.widget.media;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.os.Environment;
@@ -42,6 +43,9 @@ import com.sharpai.detector.Classifier;
 import com.sharpai.detector.Detector;
 import com.sharpai.pim.MotionDetectionRS;
 
+import org.tensorflow.demo.tracking.MultiBoxTracker;
+import org.tensorflow.demo.tracking.ObjectTracker;
+
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
@@ -51,6 +55,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import elanic.in.rsenhancer.processing.RSImageProcessor;
+import io.github.silvaren.easyrs.tools.Nv21Image;
 import tv.danmaku.ijk.media.example.activities.VideoActivity;
 import tv.danmaku.ijk.media.example.utils.screenshot;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
@@ -81,6 +86,9 @@ public class TextureRenderView extends TextureView implements IRenderView {
     private FrameUpdateListener mFrameUpdateListener = null;
 
     private Detector mDetector = null;
+
+    private MultiBoxTracker tracker;
+
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
     }
@@ -110,6 +118,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
         mRSProcessor.initialize(DETECTION_IMAGE_WIDTH, DETECTION_IMAGE_HEIGHT);
 
         mDetector = new Detector(mContext);
+        tracker = new MultiBoxTracker(mContext);
     }
     class MyCallback implements Handler.Callback {
 
@@ -429,6 +438,26 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
             personNum = result.size();
             VideoActivity.setNumberOfPerson(personNum);
+
+            byte[] originalLuminance = Nv21Image.getLuminanceFromBitmap(mRS, bmp,null);
+            tracker.onFrame(
+                    PREVIEW_IMAGE_WIDTH,
+                    PREVIEW_IMAGE_HEIGHT,
+                    PREVIEW_IMAGE_WIDTH,//previewWidth getLuminanceStride(),
+                    0,
+                    originalLuminance,
+                    mDetector.getTimestamp());
+
+            tracker.trackResults(result, originalLuminance, mDetector.getTimestamp());
+            List<MultiBoxTracker.TrackedRecognition> trackedResult = tracker.getTrackedResult();
+
+            for (final MultiBoxTracker.TrackedRecognition recognition : trackedResult) {
+                final ObjectTracker.TrackedObject trackedObject = recognition.trackedObject;
+
+                final RectF trackedPos = trackedObject.getTrackedPositionInPreviewFrame();
+                recognition.count++;
+                Log.d(TAG,"Detection ["+trackedObject.id+"] counter: "+recognition.count);
+            }
 
             // if no bigchange, but timespan between two uploaded frames is larger than 30s, treat it as big change
             if (personNum<=0) {
