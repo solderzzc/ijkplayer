@@ -418,7 +418,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
             Log.d(TAG, "onSurfaceTextureDestroyed: destroy: " + mOwnSurfaceTexture);
             return mOwnSurfaceTexture;
         }
-        private void processFrame(SurfaceTexture surface){
+        private void _processFrame(SurfaceTexture surface){
             Bitmap bmp= mWeakRenderView.get().getBitmap();
             String filename = "";
             File file = null;
@@ -480,7 +480,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
             mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
             return;
         }
-        private void _processFrame(SurfaceTexture surface){
+        private void processFrame(SurfaceTexture surface){
             Bitmap bmp= mWeakRenderView.get().getBitmap();
             boolean bigChanged = mMotionDetection.detect(bmp);
             String filename = "";
@@ -511,9 +511,11 @@ public class TextureRenderView extends TextureView implements IRenderView {
             }
 
             VideoActivity.setMotionStatus(true);
+
             List<Classifier.Recognition> result =  mDetector.processImage(bmp);
 
-            VideoActivity.setNumberOfPerson(result.size());
+            int personNum = result.size();
+            VideoActivity.setNumberOfPerson(personNum);
 
             try {
                 file = screenshot.getInstance()
