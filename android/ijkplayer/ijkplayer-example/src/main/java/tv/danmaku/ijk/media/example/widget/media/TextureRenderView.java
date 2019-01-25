@@ -20,6 +20,11 @@ package tv.danmaku.ijk.media.example.widget.media;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.os.Environment;
@@ -483,9 +488,43 @@ public class TextureRenderView extends TextureView implements IRenderView {
             mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
             return;
         }
+        private Bitmap getCropBitmapByCPU(Bitmap source, RectF cropRectF) {
+            Bitmap resultBitmap = Bitmap.createBitmap((int) cropRectF.width(),
+                    (int) cropRectF.height(), Bitmap.Config.ARGB_8888);
+            Canvas cavas = new Canvas(resultBitmap);
+
+            // draw background
+            Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
+            paint.setColor(Color.WHITE);
+            cavas.drawRect(/*www.j  a va2  s  .  co  m*/
+                    new RectF(0, 0, cropRectF.width(), cropRectF.height()),
+                    paint);
+
+            Matrix matrix = new Matrix();
+            matrix.postTranslate(-cropRectF.left, -cropRectF.top);
+
+            cavas.drawBitmap(source, matrix, paint);
+
+            if (source != null && !source.isRecycled()) {
+                source.recycle();
+            }
+
+            return resultBitmap;
+        }
         private void processFrame(SurfaceTexture surface){
+
+            long tsStart = System.currentTimeMillis();
+            long tsEnd;
             Bitmap bmp= mWeakRenderView.get().getBitmap();
+            tsEnd = System.currentTimeMillis();
+            Log.v(TAG,"time diff (getBitmap) "+(tsEnd-tsStart));
+
+            tsStart = System.currentTimeMillis();
             boolean bigChanged = mMotionDetection.detect(bmp);
+            tsEnd = System.currentTimeMillis();
+
+            Log.v(TAG,"time diff (motion) "+(tsEnd-tsStart));
+
             String filename = "";
             File file = null;
             VideoActivity.setPixelDiff(mMotionDetection.getPercentageOfDifferentPixels());
@@ -515,16 +554,36 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
             VideoActivity.setMotionStatus(true);
 
+            tsStart = System.currentTimeMillis();
+            Bitmap original = bmp.copy(bmp.getConfig(), true);
+            tsEnd = System.currentTimeMillis();
+            Log.v(TAG,"time diff (bmp.copy) "+(tsEnd-tsStart));
+
+            tsStart = System.currentTimeMillis();
             List<Classifier.Recognition> result =  mDetector.processImage(bmp);
-            mFaceDetector.predict_image(bmp);
+            tsEnd = System.currentTimeMillis();
+            Log.v(TAG,"time diff (OD) "+(tsEnd-tsStart));
+
+            for(final Classifier.Recognition recognition:result){
+                tsStart = System.currentTimeMillis();
+                RectF rectf = recognition.getLocation();
+                Log.d(TAG,"recognition rect: "+rectf.toString());
+                Bitmap personBmp = getCropBitmapByCPU(bmp,rectf);
+                mFaceDetector.predict_image(personBmp);
+                tsEnd = System.currentTimeMillis();
+                Log.v(TAG,"time diff (FD) "+(tsEnd-tsStart));
+            }
             int personNum = result.size();
             VideoActivity.setNumberOfPerson(personNum);
 
             try {
+                tsStart = System.currentTimeMillis();
                 file = screenshot.getInstance()
-                        .saveScreenshotToPicturesFolder(mContext, bmp, "frame_");
+                        .saveScreenshotToPicturesFolder(mContext, original, "frame_");
 
                 filename = file.getAbsolutePath();
+                tsEnd = System.currentTimeMillis();
+                Log.v(TAG,"time diff (Save) "+(tsEnd-tsStart));
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -559,7 +618,8 @@ public class TextureRenderView extends TextureView implements IRenderView {
                 long start = System.currentTimeMillis();
                 processFrame(surface);
                 long end = System.currentTimeMillis();
-                Log.v(TAG,"time diff is "+(end-start));
+                Log.v(TAG,"time diff (Total) "+(end-start));
+                Log.v(TAG,"time diff (======================) ");
             }
             if (mFrameUpdateListener != null) {
                 mFrameUpdateListener.onFrameUpdate(currentTime);
