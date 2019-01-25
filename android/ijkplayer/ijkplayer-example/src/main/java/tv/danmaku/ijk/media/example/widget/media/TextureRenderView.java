@@ -38,6 +38,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.mtcnn_as.FaceDetector;
 import com.sharpai.detector.Classifier;
 import com.sharpai.detector.Detector;
 import com.sharpai.pim.MotionDetectionRS;
@@ -81,6 +82,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
     private FrameUpdateListener mFrameUpdateListener = null;
 
     private Detector mDetector = null;
+    private FaceDetector mFaceDetector = null;
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
     }
@@ -110,6 +112,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
         mRSProcessor.initialize(DETECTION_IMAGE_WIDTH, DETECTION_IMAGE_HEIGHT);
 
         mDetector = new Detector(mContext);
+        mFaceDetector = new FaceDetector(mContext);
     }
     class MyCallback implements Handler.Callback {
 
@@ -513,7 +516,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
             VideoActivity.setMotionStatus(true);
 
             List<Classifier.Recognition> result =  mDetector.processImage(bmp);
-
+            mFaceDetector.predict_image(bmp);
             int personNum = result.size();
             VideoActivity.setNumberOfPerson(personNum);
 

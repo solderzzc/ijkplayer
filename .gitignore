@@ -10,6 +10,7 @@ extra
 ijkmedia/ijkyuv/
 ijkmedia/ijksoundtouch
 ijkprof/android-ndk-profiler/
+.externalNativeBuild
 
 # built application files
 *.apk
