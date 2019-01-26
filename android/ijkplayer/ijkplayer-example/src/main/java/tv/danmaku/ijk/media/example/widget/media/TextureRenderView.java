@@ -64,7 +64,7 @@ import tv.danmaku.ijk.media.player.ISurfaceTextureHolder;
 import tv.danmaku.ijk.media.player.ISurfaceTextureHost;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-public class TextureRenderView extends TextureView implements IRenderView {
+public class TextureRenderView extends GLTextureView implements IRenderView {
     private static final String TAG = "TextureRenderView";
     private MeasureHelper mMeasureHelper;
     private Context mContext;
@@ -118,6 +118,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
         mDetector = new Detector(mContext);
         mFaceDetector = new FaceDetector(mContext);
+
     }
     class MyCallback implements Handler.Callback {
 
@@ -184,14 +185,14 @@ public class TextureRenderView extends TextureView implements IRenderView {
         initView(context);
         initDetectionContext();
     }
-
+/*
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public TextureRenderView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         initView(context);
         initDetectionContext();
     }
-
+*/
     private void initView(Context context) {
         mMeasureHelper = new MeasureHelper(this);
         mSurfaceCallback = new SurfaceCallback(this);
@@ -275,10 +276,12 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         public void bindToMediaPlayer(IMediaPlayer mp) {
+            Log.d(TAG,"GL bindToMediaPlayer");
             if (mp == null)
                 return;
 
-            if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) &&
+            mp.setSurface(new Surface(mTextureView.mRender.getVideoTexture()));
+            /*if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) &&
                     (mp instanceof ISurfaceTextureHolder)) {
                 ISurfaceTextureHolder textureHolder = (ISurfaceTextureHolder) mp;
                 mTextureView.mSurfaceCallback.setOwnSurfaceTexture(false);
@@ -292,7 +295,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
                 }
             } else {
                 mp.setSurface(openSurface());
-            }
+            }*/
         }
 
         @NonNull
@@ -321,7 +324,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
             return new Surface(mSurfaceTexture);
         }
     }
-
+    VideoTextureRenderer mRender;
     //-------------------------
     // SurfaceHolder.Callback
     //-------------------------
@@ -391,6 +394,9 @@ public class TextureRenderView extends TextureView implements IRenderView {
             mIsFormatChanged = false;
             mWidth = 0;
             mHeight = 0;
+            mRender = new VideoTextureRenderer(mContext,surface,width,height);
+
+            Log.d(TAG,"GL onSurfaceTextureAvailable");
 
             ISurfaceHolder surfaceHolder = new InternalSurfaceHolder(mWeakRenderView.get(), surface, this);
             for (IRenderCallback renderCallback : mRenderCallbackMap.keySet()) {
