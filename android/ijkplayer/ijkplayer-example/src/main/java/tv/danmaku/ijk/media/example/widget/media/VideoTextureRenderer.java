@@ -5,6 +5,7 @@ import android.graphics.*;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -67,11 +68,17 @@ public class VideoTextureRenderer extends TextureSurfaceRenderer implements Surf
     private int videoHeight;
     private boolean adjustViewport = false;
 
-    public VideoTextureRenderer(Context context, SurfaceTexture texture, int width, int height)
+    TextureRenderView mSurfaceRenderView;
+
+    public VideoTextureRenderer(Context context, SurfaceTexture texture, int width, int height, TextureRenderView surfaceRenderView)
     {
         super(texture, width, height);
         this.ctx = context;
         videoTextureTransform = new float[16];
+        videoWidth = width;
+        videoHeight = height;
+
+        mSurfaceRenderView = surfaceRenderView;
     }
 
     private void loadShaders()
@@ -141,7 +148,28 @@ public class VideoTextureRenderer extends TextureSurfaceRenderer implements Surf
         videoTexture = new SurfaceTexture(textures[0]);
         videoTexture.setOnFrameAvailableListener(this);
     }
+    private Bitmap getRenderBufferBitmap() {
+        //ByteBuffer buffer = ByteBuffer.allocateDirect(videoWidth * videoHeight * 4);
+        long startTime = SystemClock.elapsedRealtime();
+        ByteBuffer buffer = ByteBuffer.allocateDirect(videoWidth * videoHeight * 4).order(ByteOrder.LITTLE_ENDIAN);
 
+        GLES20.glReadPixels(0, 0, videoWidth, videoHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer);
+        Bitmap bitmap = Bitmap.createBitmap(videoWidth, videoHeight, Bitmap.Config.ARGB_8888);
+        checkGlError("glReadPixels");
+        buffer.rewind();
+        //Log.d(TAG, "Time diff glReadPixels " + (SystemClock.elapsedRealtime() - startTime) + "ms");
+
+        bitmap.copyPixelsFromBuffer(buffer);
+
+        Matrix matrix = new Matrix();
+
+        matrix.postRotate(180);
+        matrix.postScale(-1, 1);
+        Bitmap bmp2 = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+        bitmap.recycle();
+        return bmp2;
+    }
     @Override
     protected boolean draw()
     {
@@ -171,6 +199,7 @@ public class VideoTextureRenderer extends TextureSurfaceRenderer implements Surf
         GLES20.glUseProgram(shaderProgram);
         int textureParamHandle = GLES20.glGetUniformLocation(shaderProgram, "texture");
         int textureCoordinateHandle = GLES20.glGetAttribLocation(shaderProgram, "vTexCoordinate");
+
         int positionHandle = GLES20.glGetAttribLocation(shaderProgram, "vPosition");
         int textureTranformHandle = GLES20.glGetUniformLocation(shaderProgram, "textureTransform");
 
@@ -190,6 +219,12 @@ public class VideoTextureRenderer extends TextureSurfaceRenderer implements Surf
         GLES20.glDisableVertexAttribArray(positionHandle);
         GLES20.glDisableVertexAttribArray(textureCoordinateHandle);
 
+        long tsStart = System.currentTimeMillis();
+        Bitmap bmp = getRenderBufferBitmap();
+        long tsEnd;
+        tsEnd = System.currentTimeMillis();
+        Log.v(TAG,"time diff (getBitmap) "+(tsEnd-tsStart));
+        mSurfaceRenderView.processBitmap(bmp);
         return true;
     }
 
