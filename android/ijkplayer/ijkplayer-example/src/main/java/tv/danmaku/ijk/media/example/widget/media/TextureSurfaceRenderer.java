@@ -58,7 +58,7 @@ public abstract class TextureSurfaceRenderer implements Runnable
                 egl.eglSwapBuffers(eglDisplay, eglSurface);
             }
 
-            long waitDelta = 16 - (System.currentTimeMillis() - loopStart);    // Targeting 60 fps, no need for faster
+            long waitDelta = 200 - (System.currentTimeMillis() - loopStart);    // Targeting 5 fps, no need for faster
             if (waitDelta > 0)
             {
                 try

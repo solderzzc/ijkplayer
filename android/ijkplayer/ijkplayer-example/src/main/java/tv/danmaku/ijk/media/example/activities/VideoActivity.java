@@ -87,6 +87,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
 
         mgr.set(AlarmManager.RTC, System.currentTimeMillis()+15000, pendingIntent);
 
+        Log.d(TAG,"quitAndStartLater");
         finish();
         System.exit(2);
     }
@@ -196,6 +197,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         mVideoView.setOnErrorListener(new IMediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(IMediaPlayer mp, int what, int extra) {
+                Log.d(TAG,"IMediaPlayer.OnErrorListener");
                 quitAndStartLater();
                 return false;
             }
@@ -210,6 +212,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
                 if (mLastFrameTimeStamp > 0 && cur - mLastFrameTimeStamp > 5000) {
                     Toast.makeText(VideoActivity.this, "frame timespan exceeds 5 seconds, exit!", Toast.LENGTH_LONG).show();
 
+                    Log.d(TAG,"No frame in 5000ms");
                     quitAndStartLater();
                 }
             }
