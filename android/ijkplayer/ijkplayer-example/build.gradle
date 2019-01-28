@@ -89,6 +89,7 @@ dependencies {
 
     compile project(':easyrs')
     compile project(':rembrandtAndroid')
+    compile project(':magicfilter')
 
     compile project(':ijkplayer-armv5')
     compile project(':ijkplayer-armv7a')
