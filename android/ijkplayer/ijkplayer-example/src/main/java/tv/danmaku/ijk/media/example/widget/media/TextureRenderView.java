@@ -65,7 +65,7 @@ import tv.danmaku.ijk.media.player.ISurfaceTextureHost;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class TextureRenderView extends GLTextureView implements IRenderView {
-    private static final String TAG = "TextureRenderView";
+    private static final String TAG = "TextureRenderView   ";
     private MeasureHelper mMeasureHelper;
     private Context mContext;
     private Handler mBackgroundHandler;
@@ -88,6 +88,10 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
     private Detector mDetector = null;
     private FaceDetector mFaceDetector = null;
+
+    private long mLastBigChangeTime = 0L;
+    private int mSavingCounter = 0;
+    private TextureRenderView mTextureRender;
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
     }
@@ -118,7 +122,6 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
         mDetector = new Detector(mContext);
         mFaceDetector = new FaceDetector(mContext);
-
     }
     class MyCallback implements Handler.Callback {
 
@@ -165,6 +168,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
     public TextureRenderView(Context context) {
         super(context);
         mContext = context;
+        mTextureRender = this;
         HandlerThread handlerThread = new HandlerThread("BackgroundThread");
         handlerThread.start();
         MyCallback callback = new MyCallback();
@@ -176,23 +180,25 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
     public TextureRenderView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mTextureRender = this;
         initView(context);
         initDetectionContext();
     }
 
     public TextureRenderView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mTextureRender = this;
         initView(context);
         initDetectionContext();
     }
-/*
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public TextureRenderView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        initView(context);
-        initDetectionContext();
-    }
-*/
+    /*
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+        public TextureRenderView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+            initView(context);
+            initDetectionContext();
+        }
+    */
     private void initView(Context context) {
         mMeasureHelper = new MeasureHelper(this);
         mSurfaceCallback = new SurfaceCallback(this);
@@ -341,9 +347,8 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
     private SurfaceCallback mSurfaceCallback;
 
-    private class SurfaceCallback implements TextureView.SurfaceTextureListener, ISurfaceTextureHost {
+    class SurfaceCallback implements TextureView.SurfaceTextureListener, ISurfaceTextureHost {
         private long mStartTime = 0;
-        private int mSavingCounter = 0;
         private SurfaceTexture mSurfaceTexture;
         private boolean mIsFormatChanged;
         private int mWidth;
@@ -355,8 +360,6 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
         private WeakReference<TextureRenderView> mWeakRenderView;
         private Map<IRenderCallback, Object> mRenderCallbackMap = new ConcurrentHashMap<IRenderCallback, Object>();
-
-        private long mLastBigChangeTime = 0L;
 
 
         public SurfaceCallback(@NonNull TextureRenderView renderView) {
@@ -394,7 +397,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             mIsFormatChanged = false;
             mWidth = 0;
             mHeight = 0;
-            mRender = new VideoTextureRenderer(mContext,surface,width,height);
+            mRender = new VideoTextureRenderer(mContext,surface,width,height,mTextureRender);
 
             Log.d(TAG,"GL onSurfaceTextureAvailable");
 
@@ -494,125 +497,18 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
             return;
         }
-        private Bitmap getCropBitmapByCPU(Bitmap source, RectF cropRectF) {
-            Bitmap resultBitmap = Bitmap.createBitmap((int) cropRectF.width(),
-                    (int) cropRectF.height(), Bitmap.Config.ARGB_8888);
-            Canvas cavas = new Canvas(resultBitmap);
-
-            // draw background
-            Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
-            paint.setColor(Color.WHITE);
-            cavas.drawRect(/*www.j  a va2  s  .  co  m*/
-                    new RectF(0, 0, cropRectF.width(), cropRectF.height()),
-                    paint);
-
-            Matrix matrix = new Matrix();
-            matrix.postTranslate(-cropRectF.left, -cropRectF.top);
-
-            cavas.drawBitmap(source, matrix, paint);
-
-            if (source != null && !source.isRecycled()) {
-                source.recycle();
-            }
-
-            return resultBitmap;
-        }
         private void processFrame(SurfaceTexture surface){
-
             long tsStart = System.currentTimeMillis();
             long tsEnd;
+            tsEnd = System.currentTimeMillis();
             Bitmap bmp= mWeakRenderView.get().getBitmap();
-            tsEnd = System.currentTimeMillis();
             Log.v(TAG,"time diff (getBitmap) "+(tsEnd-tsStart));
-
-            tsStart = System.currentTimeMillis();
-            boolean bigChanged = mMotionDetection.detect(bmp);
-            tsEnd = System.currentTimeMillis();
-
-            Log.v(TAG,"time diff (motion) "+(tsEnd-tsStart));
-
-            String filename = "";
-            File file = null;
-            VideoActivity.setPixelDiff(mMotionDetection.getPercentageOfDifferentPixels());
-
-            // if no bigchange, but timespan between two uploaded frames is larger than 30s, treat it as big change
-            if (!bigChanged) {
-                long tm = System.currentTimeMillis();
-                if (tm - mLastBigChangeTime > 30*1000) {
-                    bigChanged = true;
-                }
-            }
-            if(!bigChanged){
-                Log.d(TAG,"No Big changes, skip this frame");
-
-                if(mSavingCounter > 0){
-                    mSavingCounter--;
-                } else {
-                    //bmp.recycle();
-                    VideoActivity.setMotionStatus(false);
-                    VideoActivity.setNumberOfPerson(0);
-                    return;
-                }
-            } else {
-                mSavingCounter=PROCESS_FRAMES_AFTER_MOTION_DETECTED;
-                mLastBigChangeTime = System.currentTimeMillis();
-            }
-
-            VideoActivity.setMotionStatus(true);
-
-            tsStart = System.currentTimeMillis();
-            Bitmap original = bmp.copy(bmp.getConfig(), true);
-            tsEnd = System.currentTimeMillis();
-            Log.v(TAG,"time diff (bmp.copy) "+(tsEnd-tsStart));
-
-            tsStart = System.currentTimeMillis();
-            List<Classifier.Recognition> result =  mDetector.processImage(bmp);
-            tsEnd = System.currentTimeMillis();
-            Log.v(TAG,"time diff (OD) "+(tsEnd-tsStart));
-
-            for(final Classifier.Recognition recognition:result){
-                tsStart = System.currentTimeMillis();
-                RectF rectf = recognition.getLocation();
-                Log.d(TAG,"recognition rect: "+rectf.toString());
-                Bitmap personBmp = getCropBitmapByCPU(bmp,rectf);
-                mFaceDetector.predict_image(personBmp);
-                tsEnd = System.currentTimeMillis();
-                Log.v(TAG,"time diff (FD) "+(tsEnd-tsStart));
-            }
-            int personNum = result.size();
-            VideoActivity.setNumberOfPerson(personNum);
-
-            try {
-                tsStart = System.currentTimeMillis();
-                file = screenshot.getInstance()
-                        .saveScreenshotToPicturesFolder(mContext, original, "frame_");
-
-                filename = file.getAbsolutePath();
-                tsEnd = System.currentTimeMillis();
-                Log.v(TAG,"time diff (Save) "+(tsEnd-tsStart));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                //delete all jpg file in Download dir when disk is full
-                deleteAllCapturedPics();
-            }
-
-            //bitmap.recycle();
-            //bitmap = null;
-            if(filename.equals("")){
-                return;
-            }
-            if(file == null){
-                return;
-            }
-            mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
-            return;
+            processBitmap(bmp);
         }
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
             long currentTime = System.currentTimeMillis();
-            boolean needSaveFrame = false;
+            /*boolean needSaveFrame = false;
             if(mStartTime == 0) {
                 mStartTime = currentTime;
                 needSaveFrame = true;
@@ -626,7 +522,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                 long end = System.currentTimeMillis();
                 Log.v(TAG,"time diff (Total) "+(end-start));
                 Log.v(TAG,"time diff (======================) ");
-            }
+            }*/
             if (mFrameUpdateListener != null) {
                 mFrameUpdateListener.onFrameUpdate(currentTime);
             }
@@ -684,6 +580,117 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         }
     }
 
+    public void processBitmap(Bitmap bmp){
+
+        long tsStart = System.currentTimeMillis();
+        long tsEnd;
+
+        boolean bigChanged = mMotionDetection.detect(bmp);
+        tsEnd = System.currentTimeMillis();
+
+        Log.v(TAG,"time diff (motion) "+(tsEnd-tsStart));
+
+        String filename = "";
+        File file = null;
+        VideoActivity.setPixelDiff(mMotionDetection.getPercentageOfDifferentPixels());
+
+        // if no bigchange, but timespan between two uploaded frames is larger than 30s, treat it as big change
+        if (!bigChanged) {
+            long tm = System.currentTimeMillis();
+            if (tm - mLastBigChangeTime > 30*1000) {
+                bigChanged = true;
+            }
+        }
+        if(!bigChanged){
+            Log.d(TAG,"No Big changes, skip this frame");
+
+            if(mSavingCounter > 0){
+                mSavingCounter--;
+            } else {
+                //bmp.recycle();
+                VideoActivity.setMotionStatus(false);
+                VideoActivity.setNumberOfPerson(0);
+                return;
+            }
+        } else {
+            mSavingCounter=PROCESS_FRAMES_AFTER_MOTION_DETECTED;
+            mLastBigChangeTime = System.currentTimeMillis();
+        }
+
+        VideoActivity.setMotionStatus(true);
+
+        tsStart = System.currentTimeMillis();
+        Bitmap original = bmp.copy(bmp.getConfig(), true);
+        tsEnd = System.currentTimeMillis();
+        Log.v(TAG,"time diff (bmp.copy) "+(tsEnd-tsStart));
+
+        tsStart = System.currentTimeMillis();
+        List<Classifier.Recognition> result =  mDetector.processImage(bmp);
+        tsEnd = System.currentTimeMillis();
+        Log.v(TAG,"time diff (OD) "+(tsEnd-tsStart));
+
+        for(final Classifier.Recognition recognition:result){
+            tsStart = System.currentTimeMillis();
+            RectF rectf = recognition.getLocation();
+            Log.d(TAG,"recognition rect: "+rectf.toString());
+            Bitmap personBmp = getCropBitmapByCPU(bmp,rectf);
+            mFaceDetector.predict_image(personBmp);
+            tsEnd = System.currentTimeMillis();
+            Log.v(TAG,"time diff (FD) "+(tsEnd-tsStart));
+        }
+        int personNum = result.size();
+        VideoActivity.setNumberOfPerson(personNum);
+
+        try {
+            tsStart = System.currentTimeMillis();
+            file = screenshot.getInstance()
+                    .saveScreenshotToPicturesFolder(mContext, original, "frame_");
+
+            filename = file.getAbsolutePath();
+            tsEnd = System.currentTimeMillis();
+            Log.v(TAG,"time diff (Save) "+(tsEnd-tsStart));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            //delete all jpg file in Download dir when disk is full
+            deleteAllCapturedPics();
+        }
+
+        //bitmap.recycle();
+        //bitmap = null;
+        if(filename.equals("")){
+            return;
+        }
+        if(file == null){
+            return;
+        }
+        mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
+        return;
+    }
+    private Bitmap getCropBitmapByCPU(Bitmap source, RectF cropRectF) {
+        Bitmap resultBitmap = Bitmap.createBitmap((int) cropRectF.width(),
+                (int) cropRectF.height(), Bitmap.Config.ARGB_8888);
+        Canvas cavas = new Canvas(resultBitmap);
+
+        // draw background
+        Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
+        paint.setColor(Color.WHITE);
+        cavas.drawRect(/*www.j  a va2  s  .  co  m*/
+                new RectF(0, 0, cropRectF.width(), cropRectF.height()),
+                paint);
+
+        Matrix matrix = new Matrix();
+        matrix.postTranslate(-cropRectF.left, -cropRectF.top);
+
+        cavas.drawBitmap(source, matrix, paint);
+
+        if (source != null && !source.isRecycled()) {
+            source.recycle();
+        }
+
+        return resultBitmap;
+    }
     private Thread mDeletePicsThread = null;
 
     private void deleteAllCapturedPics() {
