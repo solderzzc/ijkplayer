@@ -640,32 +640,33 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         }
         int personNum = result.size();
         VideoActivity.setNumberOfPerson(personNum);
+        if (personNum>0){
+            try {
+                tsStart = System.currentTimeMillis();
+                file = screenshot.getInstance()
+                        .saveScreenshotToPicturesFolder(mContext, original, "frame_");
 
-        try {
-            tsStart = System.currentTimeMillis();
-            file = screenshot.getInstance()
-                    .saveScreenshotToPicturesFolder(mContext, original, "frame_");
+                filename = file.getAbsolutePath();
+                tsEnd = System.currentTimeMillis();
+                Log.v(TAG,"time diff (Save) "+(tsEnd-tsStart));
 
-            filename = file.getAbsolutePath();
-            tsEnd = System.currentTimeMillis();
-            Log.v(TAG,"time diff (Save) "+(tsEnd-tsStart));
+            } catch (Exception e) {
+                e.printStackTrace();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            //delete all jpg file in Download dir when disk is full
-            deleteAllCapturedPics();
+                //delete all jpg file in Download dir when disk is full
+                deleteAllCapturedPics();
+            }
+            //bitmap.recycle();
+            //bitmap = null;
+            if(filename.equals("")){
+                return;
+            }
+            if(file == null){
+                return;
+            }
+            mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
         }
 
-        //bitmap.recycle();
-        //bitmap = null;
-        if(filename.equals("")){
-            return;
-        }
-        if(file == null){
-            return;
-        }
-        mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
         return;
     }
     private Bitmap getCropBitmapByCPU(Bitmap source, RectF cropRectF) {
