@@ -617,6 +617,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             mLastBigChangeTime = System.currentTimeMillis();
         }
 
+        int face_num = 0;
         VideoActivity.setMotionStatus(true);
 
         tsStart = System.currentTimeMillis();
@@ -634,10 +635,43 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             RectF rectf = recognition.getLocation();
             Log.d(TAG,"recognition rect: "+rectf.toString());
             Bitmap personBmp = getCropBitmapByCPU(bmp,rectf);
-            mFaceDetector.predict_image(personBmp);
+            int num = mFaceDetector.predict_image(personBmp);
             tsEnd = System.currentTimeMillis();
             Log.v(TAG,"time diff (FD) "+(tsEnd-tsStart));
+            if(num > 0){
+                face_num+=num;
+                try {
+                    tsStart = System.currentTimeMillis();
+                    file = screenshot.getInstance()
+                            .saveScreenshotToPicturesFolder(mContext, personBmp, "frame_");
+
+                    filename = file.getAbsolutePath();
+                    tsEnd = System.currentTimeMillis();
+                    Log.v(TAG,"time diff (Save) "+(tsEnd-tsStart));
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                    //delete all jpg file in Download dir when disk is full
+                    deleteAllCapturedPics();
+                }
+                //bitmap.recycle();
+                //bitmap = null;
+                if(filename.equals("")){
+                    return;
+                }
+                if(file == null){
+                    return;
+                }
+                mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
+            }
         }
+
+        int personNum = result.size();
+        VideoActivity.setNumberOfPerson(personNum);
+        VideoActivity.setNumberOfFaces(face_num);
+        return;
+        /*
         int personNum = result.size();
         VideoActivity.setNumberOfPerson(personNum);
         if (personNum>0){
@@ -668,6 +702,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         }
 
         return;
+        */
     }
     private Bitmap getCropBitmapByCPU(Bitmap source, RectF cropRectF) {
         Bitmap resultBitmap = Bitmap.createBitmap((int) cropRectF.width(),

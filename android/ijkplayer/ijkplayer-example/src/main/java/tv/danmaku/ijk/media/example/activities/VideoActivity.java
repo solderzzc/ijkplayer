@@ -100,6 +100,7 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         }
     }
     private static boolean mHasMotion;
+    private static int mFaceNum=0;
     private static int mPersonNum=0;
     private static double mPixelDiff;
 
@@ -125,12 +126,18 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
     public static int getPersonNum(){
         return mPersonNum;
     }
+    public static int getFaceNum(){
+        return mFaceNum;
+    }
 
     public static void setMotionStatus(boolean motion){
         mHasMotion = motion;
     }
     public static void setNumberOfPerson(int number){
         mPersonNum = number;
+    }
+    public static void setNumberOfFaces(int number){
+        mFaceNum = number;
     }
     public String getSavedCameraURL(){
 

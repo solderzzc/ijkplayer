@@ -69,7 +69,7 @@ public class Detector {
 
   private long lastProcessingTimeMs;
   private Bitmap croppedBitmap = null;
-  private Bitmap cropCopyBitmap = null;
+  //private Bitmap cropCopyBitmap = null;
 
   private int previewWidth=1920;
   private int previewHeight=1080;
@@ -136,12 +136,12 @@ public class Detector {
 
     Log.i(TAG,"Running detection cost " + lastProcessingTimeMs + "ms");
 
-    cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
-    canvas = new Canvas(cropCopyBitmap);
-    final Paint paint = new Paint();
-    paint.setColor(Color.RED);
-    paint.setStyle(Style.STROKE);
-    paint.setStrokeWidth(2.0f);
+    //cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
+    //canvas = new Canvas(cropCopyBitmap);
+    //final Paint paint = new Paint();
+    //paint.setColor(Color.RED);
+    //paint.setStyle(Style.STROKE);
+    //paint.setStrokeWidth(2.0f);
 
     float minimumConfidence = MINIMUM_CONFIDENCE_TF_OD_API;
     switch (MODE) {
@@ -159,7 +159,7 @@ public class Detector {
         Log.i(TAG,"Result is "+result.toString());
         if(result.getTitle().equals("person")){
 
-          canvas.drawRect(location, paint);
+          //canvas.drawRect(location, paint);
 
           cropToFrameTransform.mapRect(location);
           result.setLocation(location);

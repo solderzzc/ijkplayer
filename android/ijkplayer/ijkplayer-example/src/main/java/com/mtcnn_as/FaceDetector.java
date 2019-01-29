@@ -43,14 +43,14 @@ public class FaceDetector {
         mtcnn.SetThreadsNumber(threadsNumber);
     }
 
-    public void predict_image(Bitmap yourSelectedImage){
+    public int predict_image(Bitmap yourSelectedImage){
         if (yourSelectedImage == null)
-            return;
+            return 0;
 
         if (threadsNumber != 1&&threadsNumber != 2&&threadsNumber != 4&&threadsNumber != 8){
             Log.i(TAG, "线程数："+threadsNumber);
             //infoResult.setText("线程数必须是（1，2，4，8）之一");
-            return;
+            return 0;
         }
 
         //Log.i(TAG, "最小人脸："+minFaceSize);
@@ -84,6 +84,7 @@ public class FaceDetector {
                 //infoResult.setText("视频播放结束");
             //}
             Log.i(TAG, "图宽："+width+"高："+height+" 人脸数目：" + faceNum );
+            return faceNum;
 /*
             Bitmap drawBitmap = yourSelectedImage.copy(Bitmap.Config.ARGB_8888, true);
             for(int i=0;i<faceNum;i++) {
@@ -120,6 +121,7 @@ public class FaceDetector {
             //msg.obj = yourSelectedImage;
             //update_ui.sendMessage(msg);
         }
+        return 0;
     }
 
     //提取像素点

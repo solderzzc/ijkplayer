@@ -22,7 +22,7 @@
     <string name="a_cache">a-cache</string>
     <string name="load_cost">load-cost</string>
     <string name="has_motion">motion</string>
-    <string name="person_num">people-count</string>
+    <string name="face_num">face-count</string>
     <string name="pixel_diff">diff-area</string>
     <string name="ip">box-ip</string>
     <string name="camera_ip">camera-ip</string>
