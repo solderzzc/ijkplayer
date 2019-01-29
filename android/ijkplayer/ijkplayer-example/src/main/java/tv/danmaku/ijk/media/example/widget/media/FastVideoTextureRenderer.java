@@ -20,7 +20,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.util.List;
 
 public class FastVideoTextureRenderer extends TextureSurfaceRenderer implements SurfaceTexture.OnFrameAvailableListener
 {
@@ -88,7 +87,7 @@ public class FastVideoTextureRenderer extends TextureSurfaceRenderer implements 
     private int mPboNewIndex;
     private boolean mInitRecord;
     JniBitmapHolder bitmapHolder = new JniBitmapHolder();
-
+    Bitmap mBitmap;
     public FastVideoTextureRenderer(Context context, SurfaceTexture texture, int width, int height, TextureRenderView surfaceRenderView)
     {
         super(texture, width, height);
@@ -98,6 +97,8 @@ public class FastVideoTextureRenderer extends TextureSurfaceRenderer implements 
         videoHeight = height;
 
         mSurfaceRenderView = surfaceRenderView;
+
+        mBitmap = Bitmap.createBitmap(videoWidth, videoHeight, Bitmap.Config.ARGB_8888);
     }
 
     private void loadShaders()
@@ -175,7 +176,6 @@ public class FastVideoTextureRenderer extends TextureSurfaceRenderer implements 
     }
     private Bitmap getPBOBitmap() {
         //ByteBuffer buffer = ByteBuffer.allocateDirect(videoWidth * videoHeight * 4);
-        long startTime = SystemClock.elapsedRealtime();
 
         Log.d(TAG,"GL3 glBindBuffer");
         GLES30.glBindBuffer(GLES30.GL_PIXEL_PACK_BUFFER, mPboIds.get(mPboIndex));
@@ -199,17 +199,17 @@ public class FastVideoTextureRenderer extends TextureSurfaceRenderer implements 
         //byteBuffer.get(data);
         //byteBuffer.clear();
 
-        Bitmap bitmap = Bitmap.createBitmap(videoWidth, videoHeight, Bitmap.Config.ARGB_8888);
         checkGlError("glReadPixels");
         //buffer.rewind();
+        long startTime = SystemClock.elapsedRealtime();
+        byteBuffer.rewind();
+        mBitmap.copyPixelsFromBuffer(byteBuffer);
         //Log.d(TAG, "Time diff glReadPixels " + (SystemClock.elapsedRealtime() - startTime) + "ms");
 
-        bitmap.copyPixelsFromBuffer(byteBuffer);
-
-        bitmapHolder.storeBitmap(bitmap);
+        bitmapHolder.storeBitmap(mBitmap);
         bitmapHolder.rotateBitmap180();
 
-        return bitmapHolder.getBitmapAndFree();
+        return bitmapHolder.getBitmap();
 
         //Matrix matrix = new Matrix();
 
@@ -376,8 +376,8 @@ public class FastVideoTextureRenderer extends TextureSurfaceRenderer implements 
             mSurfaceRenderView.processBitmap(bmp);
         }
 
-        //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-        //GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         //GLES20.glViewport(0, 0, videoWidth, videoHeight);
         return true;
     }
