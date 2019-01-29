@@ -330,7 +330,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             return new Surface(mSurfaceTexture);
         }
     }
-    VideoTextureRenderer mRender;
+    FastVideoTextureRenderer mRender;
     //-------------------------
     // SurfaceHolder.Callback
     //-------------------------
@@ -397,7 +397,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             mIsFormatChanged = false;
             mWidth = 0;
             mHeight = 0;
-            mRender = new VideoTextureRenderer(mContext,surface,width,height,mTextureRender);
+            mRender = new FastVideoTextureRenderer(mContext,surface,width,height,mTextureRender);
 
             Log.d(TAG,"GL onSurfaceTextureAvailable");
 
