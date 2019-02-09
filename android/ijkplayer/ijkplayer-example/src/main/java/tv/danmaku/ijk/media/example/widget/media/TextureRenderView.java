@@ -48,10 +48,21 @@ import com.sharpai.detector.Classifier;
 import com.sharpai.detector.Detector;
 import com.sharpai.pim.MotionDetectionRS;
 
+import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Rect;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.video.BackgroundSubtractor;
+import org.opencv.video.BackgroundSubtractorMOG2;
+import org.opencv.video.Video;
+
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -92,6 +103,11 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
     private long mLastBigChangeTime = 0L;
     private int mSavingCounter = 0;
     private TextureRenderView mTextureRender;
+
+    private BackgroundSubtractor mMOG2;
+    private int mBackgroundTrainCount = 0;
+    private boolean mBackgroundNeedDetect = false;
+
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
     }
@@ -100,6 +116,13 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         mFrameUpdateListener = l;
     }
 
+    static {
+        if (OpenCVLoader.initDebug()) {
+            Log.i(TAG, "OpenCV initialize success");
+        } else {
+            Log.i(TAG, "OpenCV initialize failed");
+        }
+    }
     /**
      * Initializes the UI and initiates the creation of a motion detector.
      */
@@ -122,6 +145,8 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
         mDetector = new Detector(mContext);
         mFaceDetector = new FaceDetector(mContext);
+
+        mMOG2 = Video.createBackgroundSubtractorKNN();;//Video.createBackgroundSubtractorMOG2();
     }
     class MyCallback implements Handler.Callback {
 
@@ -610,6 +635,38 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                 //bmp.recycle();
                 VideoActivity.setMotionStatus(false);
                 VideoActivity.setNumberOfPerson(0);
+
+                Mat rgba = new Mat();
+                Utils.bitmapToMat(bmp, rgba);
+
+                Mat rgb = new Mat();
+                Imgproc.cvtColor(rgba, rgb, Imgproc.COLOR_RGBA2RGB);
+                Mat fgMask = new Mat();
+                tsEnd = System.currentTimeMillis();
+                if(mBackgroundTrainCount > 10 && mBackgroundNeedDetect == true){
+
+                    mMOG2.apply(rgb,fgMask,0);
+
+                    final List<MatOfPoint> points = new ArrayList<>();
+                    final Mat hierarchy = new Mat();
+                    Imgproc.findContours(fgMask, points, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+                    for (MatOfPoint item :points){
+                        //Log.d(TAG,"UO Area result "+item);
+
+                        double area = Imgproc.contourArea(item);
+                        if(area > 10000){
+                            Rect rect = Imgproc.boundingRect(item);
+                            Log.d(TAG,"UO Area "+area +" rect: "+rect.toString());
+                        }
+                    }
+                    mBackgroundNeedDetect = false;
+                    mBackgroundTrainCount = 0;
+
+                }
+                mMOG2.apply(rgb,fgMask,0.5);
+                mBackgroundTrainCount++;
+                Log.v(TAG,"time diff (Mat Train) "+(tsEnd-tsStart));
+
                 return;
             }
         } else {
@@ -668,6 +725,9 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         }
 
         int personNum = result.size();
+        if(personNum > 0){
+            mBackgroundNeedDetect = true;
+        }
         VideoActivity.setNumberOfPerson(personNum);
         VideoActivity.setNumberOfFaces(face_num);
         return;

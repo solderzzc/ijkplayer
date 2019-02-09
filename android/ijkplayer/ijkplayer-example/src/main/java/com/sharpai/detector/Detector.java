@@ -46,6 +46,10 @@ public class Detector {
   private static final int TF_OD_API_INPUT_SIZE = 300;
   private static final boolean TF_OD_API_IS_QUANTIZED = true;
   private static final String TF_OD_API_MODEL_FILE = "detect.tflite";
+  //private static final String TF_OD_API_MODEL_FILE = "ssd_mobilenet_v1_coco_float.tflite";
+  //private static final int TF_OD_API_INPUT_SIZE = 300;
+  //private static final boolean TF_OD_API_IS_QUANTIZED = false;
+
   private static final String TF_OD_API_LABELS_FILE = "coco_labels_list.txt";
 
   // Which detection model to use: by default uses Tensorflow Object Detection API frozen
