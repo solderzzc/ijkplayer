@@ -18,6 +18,7 @@
 package tv.danmaku.ijk.media.example.widget.media;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -34,6 +35,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v8.renderscript.RenderScript;
+import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Surface;
@@ -52,13 +54,16 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.BackgroundSubtractor;
 import org.opencv.video.BackgroundSubtractorMOG2;
 import org.opencv.video.Video;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -70,6 +75,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import elanic.in.rsenhancer.processing.RSImageProcessor;
 import tv.danmaku.ijk.media.example.activities.VideoActivity;
 import tv.danmaku.ijk.media.example.utils.screenshot;
+import tv.danmaku.ijk.media.example.widget.classifier.GpuDelegateHelper;
+import tv.danmaku.ijk.media.example.widget.classifier.ImageClassifier;
+import tv.danmaku.ijk.media.example.widget.classifier.ImageClassifierFloatInception;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.ISurfaceTextureHolder;
 import tv.danmaku.ijk.media.player.ISurfaceTextureHost;
@@ -107,6 +115,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
     private BackgroundSubtractor mMOG2;
     private int mBackgroundTrainCount = 0;
     private boolean mBackgroundNeedDetect = false;
+    private ImageClassifier mClassifier;
 
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
@@ -147,6 +156,17 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         mFaceDetector = new FaceDetector(mContext);
 
         mMOG2 = Video.createBackgroundSubtractorKNN();;//Video.createBackgroundSubtractorMOG2();
+        try {
+            mClassifier = new ImageClassifierFloatInception((Activity) mContext);
+
+            if (GpuDelegateHelper.isGpuDelegateAvailable()) {
+                Log.i(TAG,"GPU is available, using GPU");
+                //mClassifier.useGpu();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
     class MyCallback implements Handler.Callback {
 
@@ -310,8 +330,11 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             Log.d(TAG,"GL bindToMediaPlayer");
             if (mp == null)
                 return;
-
-            mp.setSurface(new Surface(mTextureView.mRender.getVideoTexture()));
+            if(mTextureView.mRender.getVideoTexture() != null){
+                mp.setSurface(new Surface(mTextureView.mRender.getVideoTexture()));
+            } else {
+                Log.i(TAG,"Surface is not ready for binding");
+            }
             /*if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) &&
                     (mp instanceof ISurfaceTextureHolder)) {
                 ISurfaceTextureHolder textureHolder = (ISurfaceTextureHolder) mp;
@@ -657,6 +680,18 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                         if(area > 10000){
                             Rect rect = Imgproc.boundingRect(item);
                             Log.d(TAG,"UO Area "+area +" rect: "+rect.toString());
+
+                            Mat imgSource=rgba.clone();
+                            Imgproc.rectangle(imgSource, new Point(rect.x,rect.y), new Point(rect.x+rect.width,rect.y+rect.height),new Scalar(0,0,255));
+                            Bitmap analyzed=Bitmap.createBitmap(imgSource.cols(),imgSource.rows(),Bitmap.Config.ARGB_8888);
+                            Utils.matToBitmap(imgSource,analyzed);
+                            Bitmap resized = mMotionDetection.resizeBmp(analyzed,
+                                    mClassifier.getImageSizeX(),mClassifier.getImageSizeY());
+
+                            SpannableStringBuilder textToShow = new SpannableStringBuilder();
+                            mClassifier.classifyFrame(resized,textToShow);
+                            Log.d(TAG,"Classified: "+textToShow+" UO Area "+area +" rect: "+rect.toString());
+
                         }
                     }
                     mBackgroundNeedDetect = false;
