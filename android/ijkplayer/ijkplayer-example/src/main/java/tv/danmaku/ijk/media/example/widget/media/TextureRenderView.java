@@ -53,10 +53,12 @@ import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.BackgroundSubtractor;
-import org.opencv.video.BackgroundSubtractorMOG2;
 import org.opencv.video.Video;
+
+import com.edvard.poseestimation.BackgroundJNIExtractor;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -71,7 +73,6 @@ import elanic.in.rsenhancer.processing.RSImageProcessor;
 import tv.danmaku.ijk.media.example.activities.VideoActivity;
 import tv.danmaku.ijk.media.example.utils.screenshot;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
-import tv.danmaku.ijk.media.player.ISurfaceTextureHolder;
 import tv.danmaku.ijk.media.player.ISurfaceTextureHost;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -94,6 +95,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
     private RenderScript mRS = null;
     private MotionDetectionRS mMotionDetection;
     private RSImageProcessor mRSProcessor;
+    private android.graphics.Rect mPreviousDiffRect = null;
 
     private FrameUpdateListener mFrameUpdateListener = null;
 
@@ -105,8 +107,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
     private TextureRenderView mTextureRender;
 
     private BackgroundSubtractor mMOG2;
-    private int mBackgroundTrainCount = 0;
-    private boolean mBackgroundNeedDetect = false;
+    private boolean mSubtractorInited = false;
 
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
@@ -146,7 +147,11 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         mDetector = new Detector(mContext);
         mFaceDetector = new FaceDetector(mContext);
 
-        mMOG2 = Video.createBackgroundSubtractorKNN();;//Video.createBackgroundSubtractorMOG2();
+        mMOG2 = Video.createBackgroundSubtractorKNN(5,100,false);//Video.createBackgroundSubtractorMOG2();
+        //mMOG2 = Video.createBackgroundSubtractorMOG2();//Video.createBackgroundSubtractorMOG2();
+        //mMOG2.setHistory(5);
+        //mMOG2.setDetectShadows(false);
+        //mMOG2.setComplexityReductionThreshold(0);
     }
     class MyCallback implements Handler.Callback {
 
@@ -460,94 +465,9 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             Log.d(TAG, "onSurfaceTextureDestroyed: destroy: " + mOwnSurfaceTexture);
             return mOwnSurfaceTexture;
         }
-        private void _processFrame(SurfaceTexture surface){
-            Bitmap bmp= mWeakRenderView.get().getBitmap();
-            String filename = "";
-            File file = null;
-            int personNum = 0;
-            boolean bigChanged = false;
-
-            List<Classifier.Recognition> result =  mDetector.processImage(bmp);
-
-            personNum = result.size();
-            VideoActivity.setNumberOfPerson(personNum);
-
-            // if no bigchange, but timespan between two uploaded frames is larger than 30s, treat it as big change
-            if (personNum<=0) {
-                long tm = System.currentTimeMillis();
-                if (tm - mLastBigChangeTime > 30*1000) {
-                    bigChanged = true;
-                }
-            } else {
-                bigChanged = true;
-            }
-            if(!bigChanged){
-                Log.d(TAG,"No person detected, skip this frame");
-
-                if(mSavingCounter > 0){
-                    mSavingCounter--;
-                } else {
-                    //bmp.recycle();
-                    VideoActivity.setMotionStatus(false);
-                    VideoActivity.setNumberOfPerson(0);
-                    return;
-                }
-            } else {
-                mSavingCounter=PROCESS_FRAMES_AFTER_MOTION_DETECTED;
-                mLastBigChangeTime = System.currentTimeMillis();
-            }
-
-            VideoActivity.setMotionStatus(true);
-
-            try {
-                file = screenshot.getInstance()
-                        .saveScreenshotToPicturesFolder(mContext, bmp, "frame_");
-
-                filename = file.getAbsolutePath();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                //delete all jpg file in Download dir when disk is full
-                deleteAllCapturedPics();
-            }
-
-            //bitmap.recycle();
-            //bitmap = null;
-            if(filename.equals("")){
-                return;
-            }
-            if(file == null){
-                return;
-            }
-            mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
-            return;
-        }
-        private void processFrame(SurfaceTexture surface){
-            long tsStart = System.currentTimeMillis();
-            long tsEnd;
-            tsEnd = System.currentTimeMillis();
-            Bitmap bmp= mWeakRenderView.get().getBitmap();
-            Log.v(TAG,"time diff (getBitmap) "+(tsEnd-tsStart));
-            processBitmap(bmp);
-        }
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {
             long currentTime = System.currentTimeMillis();
-            /*boolean needSaveFrame = false;
-            if(mStartTime == 0) {
-                mStartTime = currentTime;
-                needSaveFrame = true;
-            } else if (currentTime - mStartTime > 200){
-                needSaveFrame = true;
-                mStartTime = currentTime;
-            }
-            if(needSaveFrame){
-                long start = System.currentTimeMillis();
-                processFrame(surface);
-                long end = System.currentTimeMillis();
-                Log.v(TAG,"time diff (Total) "+(end-start));
-                Log.v(TAG,"time diff (======================) ");
-            }*/
             if (mFrameUpdateListener != null) {
                 mFrameUpdateListener.onFrameUpdate(currentTime);
             }
@@ -635,17 +555,30 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                 //bmp.recycle();
                 VideoActivity.setMotionStatus(false);
                 VideoActivity.setNumberOfPerson(0);
+                VideoActivity.setNumberOfFaces(0);
+
+
+                // Let's detect if there's big changes
+                long tsMatStart = System.currentTimeMillis();
 
                 Mat rgba = new Mat();
-                Utils.bitmapToMat(bmp, rgba);
+                Bitmap resizedBmp = mMotionDetection.resizeBmp(bmp,DETECTION_IMAGE_WIDTH,DETECTION_IMAGE_HEIGHT);
+                Utils.bitmapToMat(resizedBmp, rgba);
 
                 Mat rgb = new Mat();
-                Imgproc.cvtColor(rgba, rgb, Imgproc.COLOR_RGBA2RGB);
                 Mat fgMask = new Mat();
-                tsEnd = System.currentTimeMillis();
-                if(mBackgroundTrainCount > 10 && mBackgroundNeedDetect == true){
 
-                    mMOG2.apply(rgb,fgMask,0);
+                //Imgproc.cvtColor(rgba, rgb, Imgproc.COLOR_RGBA2RGB);
+                Imgproc.cvtColor(rgba, rgb, Imgproc.COLOR_RGBA2GRAY);
+                //Imgproc.GaussianBlur(rgb,rgb,new Size(21, 21), 0);
+
+                final List<Rect> rects = new ArrayList<>();
+                if(mSubtractorInited == true){
+                    mMOG2.apply(rgb,fgMask,0.5);
+
+                    //reference https://github.com/melvincabatuan/BackgroundSubtraction/blob/master/app/jni/ImageProcessing.cpp#L78
+                    //Imgproc.GaussianBlur(fgMask,fgMask,new Size(11,11), 3.5,3.5);
+                    //Imgproc.threshold(fgMask,fgMask,10,255,Imgproc.THRESH_BINARY);
 
                     final List<MatOfPoint> points = new ArrayList<>();
                     final Mat hierarchy = new Mat();
@@ -654,19 +587,25 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                         //Log.d(TAG,"UO Area result "+item);
 
                         double area = Imgproc.contourArea(item);
-                        if(area > 10000){
+                        if(area > 2000){
                             Rect rect = Imgproc.boundingRect(item);
-                            Log.d(TAG,"UO Area "+area +" rect: "+rect.toString());
+                            rects.add(rect);
                         }
                     }
-                    mBackgroundNeedDetect = false;
-                    mBackgroundTrainCount = 0;
 
+                    long tsMatEnd = System.currentTimeMillis();
+                    Log.v(TAG,"time diff (Mat Run) "+(tsMatEnd-tsMatStart));
+                } else {
+                    mSubtractorInited = true;
+                    tsMatStart = System.currentTimeMillis();
+                    mMOG2.apply(rgb,fgMask,-1);
+
+                    long tsMatEnd = System.currentTimeMillis();
+                    Log.v(TAG,"time diff (Mat Train) "+(tsMatEnd-tsMatStart));
                 }
-                mMOG2.apply(rgb,fgMask,0.5);
-                mBackgroundTrainCount++;
-                Log.v(TAG,"time diff (Mat Train) "+(tsEnd-tsStart));
-
+                for(Rect rect:rects){
+                    Log.d(TAG,"UO Area "+rect.area()+" rect "+rect.toString());
+                }
                 return;
             }
         } else {
@@ -678,7 +617,6 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         VideoActivity.setMotionStatus(true);
 
         tsStart = System.currentTimeMillis();
-        Bitmap original = bmp.copy(bmp.getConfig(), true);
         tsEnd = System.currentTimeMillis();
         Log.v(TAG,"time diff (bmp.copy) "+(tsEnd-tsStart));
 
@@ -686,6 +624,10 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         List<Classifier.Recognition> result =  mDetector.processImage(bmp);
         tsEnd = System.currentTimeMillis();
         Log.v(TAG,"time diff (OD) "+(tsEnd-tsStart));
+
+
+        int personNum = result.size();
+        VideoActivity.setNumberOfPerson(personNum);
 
         for(final Classifier.Recognition recognition:result){
             tsStart = System.currentTimeMillis();
@@ -724,12 +666,8 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             }
         }
 
-        int personNum = result.size();
-        if(personNum > 0){
-            mBackgroundNeedDetect = true;
-        }
-        VideoActivity.setNumberOfPerson(personNum);
         VideoActivity.setNumberOfFaces(face_num);
+
         return;
         /*
         int personNum = result.size();
