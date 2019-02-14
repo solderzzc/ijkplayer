@@ -108,6 +108,8 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
     private BackgroundSubtractor mMOG2;
     private boolean mSubtractorInited = false;
+    private Rect mPreviousObjectRect = null;
+    private int mIntersectCount = 0;
 
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
@@ -524,7 +526,22 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             mDidDetachFromWindow = true;
         }
     }
+    private double calcIOU(Rect rect1,Rect rect2){
+        android.graphics.Rect rect_1 = new android.graphics.Rect(rect1.x,
+                rect1.y,
+                rect1.x+rect1.width,
+                rect1.y+rect1.height);
 
+        android.graphics.Rect rect_2 = new android.graphics.Rect(rect2.x,
+                rect2.y,
+                rect2.x+rect2.width,
+                rect2.y+rect2.height);
+
+        Log.d(TAG,"UO Area 1 "+rect_1.toShortString()+" 2 "+rect_2.toShortString());
+        rect_1.intersect(rect_2);
+        return 1.0*rect_1.width()*rect_2.height()/(rect_2.width()*rect_2.height());
+
+    }
     public void processBitmap(Bitmap bmp){
 
         long tsStart = System.currentTimeMillis();
@@ -546,7 +563,17 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                 bigChanged = true;
             }
         }
-        if(!bigChanged){
+
+        tsStart = System.currentTimeMillis();
+        List<Classifier.Recognition> result =  mDetector.processImage(bmp);
+        tsEnd = System.currentTimeMillis();
+        Log.v(TAG,"time diff (OD) "+(tsEnd-tsStart));
+
+
+        int personNum = result.size();
+        VideoActivity.setNumberOfPerson(personNum);
+
+        if(!bigChanged && personNum == 0){
             Log.d(TAG,"No Big changes, skip this frame");
 
             if(mSavingCounter > 0){
@@ -583,14 +610,39 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                     final List<MatOfPoint> points = new ArrayList<>();
                     final Mat hierarchy = new Mat();
                     Imgproc.findContours(fgMask, points, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+                    Rect biggest = null;
                     for (MatOfPoint item :points){
                         //Log.d(TAG,"UO Area result "+item);
 
                         double area = Imgproc.contourArea(item);
                         if(area > 2000){
                             Rect rect = Imgproc.boundingRect(item);
+                            if(biggest==null){
+                                biggest = rect;
+                            } else if(rect.area()>biggest.area()){
+                                biggest = rect;
+                            }
                             rects.add(rect);
                         }
+                    }
+                    if(biggest != null){
+                        if(mPreviousObjectRect !=null){
+                            //mPreviousObjectRect.
+                            double iou = calcIOU(biggest,mPreviousObjectRect);
+                            if(iou > 0.4){
+                                mIntersectCount++;
+                                Log.d(TAG,"UO Intersect IOU "+iou+" count "+mIntersectCount);
+                            } else {
+                                mIntersectCount = 0;
+                                mPreviousObjectRect = biggest;
+                            }
+                        } else {
+                            mIntersectCount = 0;
+                            mPreviousObjectRect = biggest;
+                        }
+                    } else {
+                        mPreviousObjectRect = null;
+                        mIntersectCount = 0;
                     }
 
                     long tsMatEnd = System.currentTimeMillis();
@@ -615,19 +667,6 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
         int face_num = 0;
         VideoActivity.setMotionStatus(true);
-
-        tsStart = System.currentTimeMillis();
-        tsEnd = System.currentTimeMillis();
-        Log.v(TAG,"time diff (bmp.copy) "+(tsEnd-tsStart));
-
-        tsStart = System.currentTimeMillis();
-        List<Classifier.Recognition> result =  mDetector.processImage(bmp);
-        tsEnd = System.currentTimeMillis();
-        Log.v(TAG,"time diff (OD) "+(tsEnd-tsStart));
-
-
-        int personNum = result.size();
-        VideoActivity.setNumberOfPerson(personNum);
 
         for(final Classifier.Recognition recognition:result){
             tsStart = System.currentTimeMillis();
