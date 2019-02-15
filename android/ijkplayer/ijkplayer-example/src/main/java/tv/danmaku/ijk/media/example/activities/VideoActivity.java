@@ -58,7 +58,7 @@ import tv.danmaku.ijk.media.example.widget.media.MeasureHelper;
 public class VideoActivity extends AppCompatActivity implements TracksFragment.ITrackHolder {
     private static final String TAG = "VideoActivity";
 
-    private String mVideoURL;
+    private static String mVideoURL;
     private Uri    mVideoUri;
 
     private AndroidMediaController mMediaController;
@@ -72,6 +72,10 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
     private boolean mBackPressed;
 
     private long mLastFrameTimeStamp = 0L;
+
+    public static String getVideoURL(){
+        return mVideoURL;
+    }
 
     private void quitAndStartLater() {
         Intent intent = new Intent(VideoActivity.this, VideoActivity.class);

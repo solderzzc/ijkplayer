@@ -47,6 +47,7 @@ import com.mtcnn_as.FaceDetector;
 import com.sharpai.detector.Classifier;
 import com.sharpai.detector.Detector;
 import com.sharpai.pim.MotionDetectionRS;
+import com.sharpai.utils.FFmpegRecorder;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -61,7 +62,9 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -108,6 +111,8 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
     private Rect mPreviousObjectRect = null;
     private int mIntersectCount = 0;
     private int mPreviousPersonNum = 0;
+
+    private boolean mRecording = false;
 
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
@@ -753,11 +758,36 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
         if(personNum>0){
             doFaceDetectionAndSendTask(result,bmp);
+            if(mRecording==false){
+                mRecording = true;
+                Log.v(TAG,"FFMPEG Starting video recording");
+                File mp4File = getOutputMediaFile("video_");
+                new FFmpegRecorder(mContext,VideoActivity.getVideoURL(),mp4File);
+            }
         }
 
         checkIfNeedSendDummyTask(bmp);
 
         return;
+    }
+    private File getOutputMediaFile(String filename) {
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+        File mediaStorageDirectory = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                        + File.separator);
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDirectory.exists()) {
+            if (!mediaStorageDirectory.mkdirs()) {
+                return null;
+            }
+        }
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss_SSS").format(new Date());
+        File mediaFile;
+        String mImageName = filename + timeStamp + ".mp4";
+        mediaFile = new File(mediaStorageDirectory.getPath() + File.separator + mImageName);
+        return mediaFile;
     }
     private Bitmap getCropBitmapByCPU(Bitmap source, RectF cropRectF) {
         Bitmap resultBitmap = Bitmap.createBitmap((int) cropRectF.width(),
