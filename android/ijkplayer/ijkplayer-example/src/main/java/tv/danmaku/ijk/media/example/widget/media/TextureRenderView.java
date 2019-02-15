@@ -53,12 +53,9 @@ import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Rect;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.video.BackgroundSubtractor;
 import org.opencv.video.Video;
-
-import com.edvard.poseestimation.BackgroundJNIExtractor;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -102,7 +99,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
     private Detector mDetector = null;
     private FaceDetector mFaceDetector = null;
 
-    private long mLastBigChangeTime = 0L;
+    private long mLastTaskSentTimestamp = 0L;
     private int mSavingCounter = 0;
     private TextureRenderView mTextureRender;
 
@@ -110,6 +107,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
     private boolean mSubtractorInited = false;
     private Rect mPreviousObjectRect = null;
     private int mIntersectCount = 0;
+    private int mPreviousPersonNum = 0;
 
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
@@ -542,131 +540,94 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         return 1.0*rect_1.width()*rect_2.height()/(rect_2.width()*rect_2.height());
 
     }
-    public void processBitmap(Bitmap bmp){
+    public boolean detectObjectChanges(Bitmap bmp){
 
-        long tsStart = System.currentTimeMillis();
+        // Let's detect if there's big changes
+        long tsMatStart = System.currentTimeMillis();
+
+        Mat rgba = new Mat();
+        Bitmap resizedBmp = mMotionDetection.resizeBmp(bmp,DETECTION_IMAGE_WIDTH,DETECTION_IMAGE_HEIGHT);
+        Utils.bitmapToMat(resizedBmp, rgba);
+
+        Mat rgb = new Mat();
+        Mat fgMask = new Mat();
+
+        //Imgproc.cvtColor(rgba, rgb, Imgproc.COLOR_RGBA2RGB);
+        Imgproc.cvtColor(rgba, rgb, Imgproc.COLOR_RGBA2GRAY);
+        //Imgproc.GaussianBlur(rgb,rgb,new Size(21, 21), 0);
+
+        final List<Rect> rects = new ArrayList<>();
+        if(mSubtractorInited == true){
+            mMOG2.apply(rgb,fgMask,0.5);
+
+            //reference https://github.com/melvincabatuan/BackgroundSubtraction/blob/master/app/jni/ImageProcessing.cpp#L78
+            //Imgproc.GaussianBlur(fgMask,fgMask,new Size(11,11), 3.5,3.5);
+            //Imgproc.threshold(fgMask,fgMask,10,255,Imgproc.THRESH_BINARY);
+
+            final List<MatOfPoint> points = new ArrayList<>();
+            final Mat hierarchy = new Mat();
+            Imgproc.findContours(fgMask, points, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+            Rect biggest = null;
+            for (MatOfPoint item :points){
+                //Log.d(TAG,"UO Area result "+item);
+
+                double area = Imgproc.contourArea(item);
+                if(area > 1000){
+                    Rect rect = Imgproc.boundingRect(item);
+                    if(biggest==null){
+                        biggest = rect;
+                    } else if(rect.area()>biggest.area()){
+                        biggest = rect;
+                    }
+                    rects.add(rect);
+                }
+            }
+            if(biggest != null){
+                if(mPreviousObjectRect !=null){
+                    //mPreviousObjectRect.
+                    double iou = calcIOU(biggest,mPreviousObjectRect);
+                    if(iou > 0.4){
+                        mIntersectCount++;
+                        Log.d(TAG,"UO Intersect IOU "+iou+" count "+mIntersectCount);
+                    } else {
+                        mIntersectCount = 0;
+                        mPreviousObjectRect = biggest;
+                    }
+                } else {
+                    mIntersectCount = 0;
+                    mPreviousObjectRect = biggest;
+                }
+            } else {
+                mPreviousObjectRect = null;
+                mIntersectCount = 0;
+            }
+
+            long tsMatEnd = System.currentTimeMillis();
+            Log.v(TAG,"time diff (Mat Run) "+(tsMatEnd-tsMatStart));
+        } else {
+            mSubtractorInited = true;
+            tsMatStart = System.currentTimeMillis();
+            mMOG2.apply(rgb,fgMask,-1);
+
+            long tsMatEnd = System.currentTimeMillis();
+            Log.v(TAG,"time diff (Mat Train) "+(tsMatEnd-tsMatStart));
+        }
+        double areaTotal = 0;
+        for(Rect rect:rects){
+            Log.d(TAG,"UO Area "+rect.area()+" rect "+rect.toString());
+            areaTotal += rect.area();
+        }
+        double diffarea = areaTotal /(DETECTION_IMAGE_WIDTH*DETECTION_IMAGE_HEIGHT)/100;
+
+        VideoActivity.setPixelDiff(diffarea);
+        return rects.size()>0;
+    }
+    public int doFaceDetectionAndSendTask(List<Classifier.Recognition> result,Bitmap bmp){
+        long tsStart;
         long tsEnd;
-
-        boolean bigChanged = mMotionDetection.detect(bmp);
-        tsEnd = System.currentTimeMillis();
-
-        Log.v(TAG,"time diff (motion) "+(tsEnd-tsStart));
-
+        int face_num = 0;
         String filename = "";
         File file = null;
-        VideoActivity.setPixelDiff(mMotionDetection.getPercentageOfDifferentPixels());
-
-        // if no bigchange, but timespan between two uploaded frames is larger than 30s, treat it as big change
-        if (!bigChanged) {
-            long tm = System.currentTimeMillis();
-            if (tm - mLastBigChangeTime > 30*1000) {
-                bigChanged = true;
-            }
-        }
-
-        tsStart = System.currentTimeMillis();
-        List<Classifier.Recognition> result =  mDetector.processImage(bmp);
-        tsEnd = System.currentTimeMillis();
-        Log.v(TAG,"time diff (OD) "+(tsEnd-tsStart));
-
-
-        int personNum = result.size();
-        VideoActivity.setNumberOfPerson(personNum);
-
-        if(!bigChanged && personNum == 0){
-            Log.d(TAG,"No Big changes, skip this frame");
-
-            if(mSavingCounter > 0){
-                mSavingCounter--;
-            } else {
-                //bmp.recycle();
-                VideoActivity.setMotionStatus(false);
-                VideoActivity.setNumberOfPerson(0);
-                VideoActivity.setNumberOfFaces(0);
-
-
-                // Let's detect if there's big changes
-                long tsMatStart = System.currentTimeMillis();
-
-                Mat rgba = new Mat();
-                Bitmap resizedBmp = mMotionDetection.resizeBmp(bmp,DETECTION_IMAGE_WIDTH,DETECTION_IMAGE_HEIGHT);
-                Utils.bitmapToMat(resizedBmp, rgba);
-
-                Mat rgb = new Mat();
-                Mat fgMask = new Mat();
-
-                //Imgproc.cvtColor(rgba, rgb, Imgproc.COLOR_RGBA2RGB);
-                Imgproc.cvtColor(rgba, rgb, Imgproc.COLOR_RGBA2GRAY);
-                //Imgproc.GaussianBlur(rgb,rgb,new Size(21, 21), 0);
-
-                final List<Rect> rects = new ArrayList<>();
-                if(mSubtractorInited == true){
-                    mMOG2.apply(rgb,fgMask,0.5);
-
-                    //reference https://github.com/melvincabatuan/BackgroundSubtraction/blob/master/app/jni/ImageProcessing.cpp#L78
-                    //Imgproc.GaussianBlur(fgMask,fgMask,new Size(11,11), 3.5,3.5);
-                    //Imgproc.threshold(fgMask,fgMask,10,255,Imgproc.THRESH_BINARY);
-
-                    final List<MatOfPoint> points = new ArrayList<>();
-                    final Mat hierarchy = new Mat();
-                    Imgproc.findContours(fgMask, points, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-                    Rect biggest = null;
-                    for (MatOfPoint item :points){
-                        //Log.d(TAG,"UO Area result "+item);
-
-                        double area = Imgproc.contourArea(item);
-                        if(area > 2000){
-                            Rect rect = Imgproc.boundingRect(item);
-                            if(biggest==null){
-                                biggest = rect;
-                            } else if(rect.area()>biggest.area()){
-                                biggest = rect;
-                            }
-                            rects.add(rect);
-                        }
-                    }
-                    if(biggest != null){
-                        if(mPreviousObjectRect !=null){
-                            //mPreviousObjectRect.
-                            double iou = calcIOU(biggest,mPreviousObjectRect);
-                            if(iou > 0.4){
-                                mIntersectCount++;
-                                Log.d(TAG,"UO Intersect IOU "+iou+" count "+mIntersectCount);
-                            } else {
-                                mIntersectCount = 0;
-                                mPreviousObjectRect = biggest;
-                            }
-                        } else {
-                            mIntersectCount = 0;
-                            mPreviousObjectRect = biggest;
-                        }
-                    } else {
-                        mPreviousObjectRect = null;
-                        mIntersectCount = 0;
-                    }
-
-                    long tsMatEnd = System.currentTimeMillis();
-                    Log.v(TAG,"time diff (Mat Run) "+(tsMatEnd-tsMatStart));
-                } else {
-                    mSubtractorInited = true;
-                    tsMatStart = System.currentTimeMillis();
-                    mMOG2.apply(rgb,fgMask,-1);
-
-                    long tsMatEnd = System.currentTimeMillis();
-                    Log.v(TAG,"time diff (Mat Train) "+(tsMatEnd-tsMatStart));
-                }
-                for(Rect rect:rects){
-                    Log.d(TAG,"UO Area "+rect.area()+" rect "+rect.toString());
-                }
-                return;
-            }
-        } else {
-            mSavingCounter=PROCESS_FRAMES_AFTER_MOTION_DETECTED;
-            mLastBigChangeTime = System.currentTimeMillis();
-        }
-
-        int face_num = 0;
-        VideoActivity.setMotionStatus(true);
 
         for(final Classifier.Recognition recognition:result){
             tsStart = System.currentTimeMillis();
@@ -696,50 +657,107 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                 //bitmap.recycle();
                 //bitmap = null;
                 if(filename.equals("")){
-                    return;
+                    continue;
                 }
                 if(file == null){
-                    return;
+                    continue;
                 }
+
+                mLastTaskSentTimestamp = System.currentTimeMillis();
                 mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
             }
         }
 
         VideoActivity.setNumberOfFaces(face_num);
+        return face_num;
+    }
+    public void doSendDummyTask(Bitmap bmp){
+        String filename = "";
+        File file = null;
+
+        long tsStart = System.currentTimeMillis();
+        RectF rectf = new RectF(0.0f,0.0f,1.0f,1.0f);
+        Log.d(TAG,"dummy recognition rect: "+rectf.toString());
+        Bitmap personBmp = getCropBitmapByCPU(bmp,rectf);
+        try {
+            tsStart = System.currentTimeMillis();
+            file = screenshot.getInstance()
+                    .saveScreenshotToPicturesFolder(mContext, personBmp, "frame_");
+
+            filename = file.getAbsolutePath();
+            long tsEnd = System.currentTimeMillis();
+            Log.v(TAG,"time diff (Save) "+(tsEnd-tsStart));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            //delete all jpg file in Download dir when disk is full
+            deleteAllCapturedPics();
+        }
+        if(filename.equals("")){
+            return;
+        }
+        if(file == null){
+            return;
+        }
+        mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
 
         return;
-        /*
-        int personNum = result.size();
-        VideoActivity.setNumberOfPerson(personNum);
-        if (personNum>0){
-            try {
-                tsStart = System.currentTimeMillis();
-                file = screenshot.getInstance()
-                        .saveScreenshotToPicturesFolder(mContext, original, "frame_");
+    }
+    private void checkIfNeedSendDummyTask(Bitmap bmp){
 
-                filename = file.getAbsolutePath();
-                tsEnd = System.currentTimeMillis();
-                Log.v(TAG,"time diff (Save) "+(tsEnd-tsStart));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                //delete all jpg file in Download dir when disk is full
-                deleteAllCapturedPics();
-            }
-            //bitmap.recycle();
-            //bitmap = null;
-            if(filename.equals("")){
-                return;
-            }
-            if(file == null){
-                return;
-            }
-            mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
+        long tm = System.currentTimeMillis();
+        if (tm - mLastTaskSentTimestamp > 30*1000) {
+            mLastTaskSentTimestamp = System.currentTimeMillis();
+            doSendDummyTask(bmp);
+            Log.d(TAG,"To send dummy task to keep alive for client status");
         }
 
+    }
+    public void processBitmap(Bitmap bmp){
+        long tsStart = System.currentTimeMillis();
+        long tsEnd;
+
+        boolean bigChanged = true;
+
+        if(mPreviousPersonNum == 0){
+            bigChanged = mMotionDetection.detect(bmp);
+            VideoActivity.setMotionStatus(bigChanged);
+            tsEnd = System.currentTimeMillis();
+
+            Log.v(TAG,"time diff (motion) "+(tsEnd-tsStart));
+            VideoActivity.setPixelDiff(mMotionDetection.getPercentageOfDifferentPixels());
+            if(!bigChanged){
+                if(mSavingCounter > 0){
+                    mSavingCounter--;
+                } else {
+                    //bmp.recycle();
+                    VideoActivity.setMotionStatus(false);
+                    VideoActivity.setNumberOfFaces(0);
+                    boolean ifChanged = detectObjectChanges(bmp);
+                    Log.d(TAG,"Object changed after person leaving: "+ifChanged);
+                    checkIfNeedSendDummyTask(bmp);
+                    return;
+                }
+            } else {
+                mSavingCounter=PROCESS_FRAMES_AFTER_MOTION_DETECTED;
+            }
+        }
+        tsStart = System.currentTimeMillis();
+        List<Classifier.Recognition> result =  mDetector.processImage(bmp);
+        int personNum = result.size();
+        mPreviousPersonNum = personNum;
+        VideoActivity.setNumberOfPerson(personNum);
+        tsEnd = System.currentTimeMillis();
+        Log.v(TAG,"time diff (OD) "+(tsEnd-tsStart));
+
+        if(personNum>0){
+            doFaceDetectionAndSendTask(result,bmp);
+        }
+
+        checkIfNeedSendDummyTask(bmp);
+
         return;
-        */
     }
     private Bitmap getCropBitmapByCPU(Bitmap source, RectF cropRectF) {
         Bitmap resultBitmap = Bitmap.createBitmap((int) cropRectF.width(),

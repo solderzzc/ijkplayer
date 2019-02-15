@@ -51,6 +51,7 @@ public class MotionDetectionRS {
 	private static final KeyValue<String,Integer> mPixelFormat =
 		new KeyValue<String, Integer>("pim.md.pixel_format", AndroidImageFactory.IMAGE_FORMAT_NV21);
 
+	// this is 3%
 	private static final double MOTION_THRESHOLD = 0.03;
 
 	// Background image
