@@ -113,6 +113,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
     private int mPreviousPersonNum = 0;
 
     private boolean mRecording = false;
+    private FFmpegRecorder mFFmpegRecorder = null;
 
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
@@ -321,7 +322,11 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             if (mp == null)
                 return;
 
-            mp.setSurface(new Surface(mTextureView.mRender.getVideoTexture()));
+            if(mTextureView.mRender!=null){
+                mp.setSurface(new Surface(mTextureView.mRender.getVideoTexture()));
+            } else {
+                Log.e(TAG,"can't set surface to media player due to surface is not initialed");
+            }
             /*if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) &&
                     (mp instanceof ISurfaceTextureHolder)) {
                 ISurfaceTextureHolder textureHolder = (ISurfaceTextureHolder) mp;
@@ -594,6 +599,12 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                     if(iou > 0.4){
                         mIntersectCount++;
                         Log.d(TAG,"UO Intersect IOU "+iou+" count "+mIntersectCount);
+                        if(mIntersectCount>2){
+                            if(mFFmpegRecorder!=null){
+                                mFFmpegRecorder.stopRecording();
+                                mFFmpegRecorder=null;
+                            }
+                        }
                     } else {
                         mIntersectCount = 0;
                         mPreviousObjectRect = biggest;
@@ -762,7 +773,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                 mRecording = true;
                 Log.v(TAG,"FFMPEG Starting video recording");
                 File mp4File = getOutputMediaFile("video_");
-                new FFmpegRecorder(mContext,VideoActivity.getVideoURL(),mp4File);
+                mFFmpegRecorder = new FFmpegRecorder(mContext,VideoActivity.getVideoURL(),mp4File);
             }
         }
 
