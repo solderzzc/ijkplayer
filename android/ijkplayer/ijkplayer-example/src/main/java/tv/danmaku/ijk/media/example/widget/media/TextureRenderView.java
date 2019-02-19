@@ -630,7 +630,12 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                         mIntersectCount++;
                         Log.d(TAG,"UO Intersect IOU "+iou+" count "+mIntersectCount);
                         if(mIntersectCount>2){
-
+                            if(mRecording){
+                                Log.i(TAG,"There is something spotted ");
+                                FFmpeg.cancel();
+                                String result = FFmpeg.getLastCommandOutput();
+                                Log.d(TAG,"FFMPEG output is "+result);
+                            }
                         }
                     } else {
                         mIntersectCount = 0;
@@ -780,7 +785,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                     boolean ifChanged = detectObjectChanges(bmp);
                     Log.d(TAG,"Object changed after person leaving: "+ifChanged);
                     checkIfNeedSendDummyTask(bmp);
-                    if(mRecording){
+                    if(!ifChanged && mRecording){
                         FFmpeg.cancel();
                         String result = FFmpeg.getLastCommandOutput();
                         Log.d(TAG,"FFMPEG output is "+result);
