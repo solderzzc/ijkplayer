@@ -820,11 +820,11 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                         int rc = FFmpeg.getLastReturnCode();
                         String output = FFmpeg.getLastCommandOutput();
 
+                        mRecording = false;
                         if (rc == RETURN_CODE_SUCCESS) {
                             Log.i(Config.TAG, "Record Command execution completed successfully: "+output);
                         } else if (rc == RETURN_CODE_CANCEL) {
                             Log.i(Config.TAG, "Record Command execution cancelled by user.");
-
                             /*
                             new Mp4Composer(mp4File.toString(), mp4File2.toString())
                                     .size( DETECTION_IMAGE_WIDTH,  DETECTION_IMAGE_HEIGHT)
