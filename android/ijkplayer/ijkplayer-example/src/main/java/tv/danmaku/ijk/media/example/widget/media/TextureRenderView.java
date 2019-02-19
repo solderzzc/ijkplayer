@@ -71,6 +71,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -873,8 +874,8 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
         File mediaStorageDirectory = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                        + File.separator);
+                getSDCardPath()
+                        + File.separator+Environment.DIRECTORY_DOWNLOADS);
         // Create the storage directory if it does not exist
         if (!mediaStorageDirectory.exists()) {
             if (!mediaStorageDirectory.mkdirs()) {
@@ -887,6 +888,32 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         String mImageName = filename + timeStamp + ".mp4";
         mediaFile = new File(mediaStorageDirectory.getPath() + File.separator + mImageName);
         return mediaFile;
+    }
+    private File getSDCardPath(){
+            String path = null;
+            File sdCardFile = null;
+            List<String> sdCardPossiblePath = Arrays.asList("external_sd", "ext_sd", "external", "extSdCard");
+            for (String sdPath : sdCardPossiblePath) {
+                File file = new File("/mnt/", sdPath);
+                if (file.isDirectory() && file.canWrite()) {
+                    path = file.getAbsolutePath();
+                    String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
+                    File testWritable = new File(path, "test_" + timeStamp);
+                    if (testWritable.mkdirs()) {
+                        testWritable.delete();
+                    }
+                    else {
+                        path = null;
+                    }
+                }
+            }
+            if (path != null) {
+                sdCardFile = new File(path);
+            }
+            else {
+                sdCardFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+            }
+            return sdCardFile;
     }
     private Bitmap getCropBitmapByCPU(Bitmap source, RectF cropRectF) {
         Bitmap resultBitmap = Bitmap.createBitmap((int) cropRectF.width(),
