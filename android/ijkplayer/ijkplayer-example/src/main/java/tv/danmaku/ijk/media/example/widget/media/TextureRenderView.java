@@ -43,11 +43,18 @@ import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.arthenica.mobileffmpeg.Config;
+import com.arthenica.mobileffmpeg.FFmpeg;
+/*
+import com.daasuu.mp4compose.FillMode;
+import com.daasuu.mp4compose.composer.Mp4Composer;
+import com.daasuu.mp4compose.filter.GlSepiaFilter;
+*/
 import com.mtcnn_as.FaceDetector;
 import com.sharpai.detector.Classifier;
 import com.sharpai.detector.Detector;
 import com.sharpai.pim.MotionDetectionRS;
-import com.sharpai.utils.FFmpegRecorder;
+//import com.zolad.videoslimmer.VideoSlimmer;
 
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
@@ -74,6 +81,9 @@ import tv.danmaku.ijk.media.example.activities.VideoActivity;
 import tv.danmaku.ijk.media.example.utils.screenshot;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.ISurfaceTextureHost;
+
+import static com.arthenica.mobileffmpeg.FFmpeg.RETURN_CODE_CANCEL;
+import static com.arthenica.mobileffmpeg.FFmpeg.RETURN_CODE_SUCCESS;
 
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 public class TextureRenderView extends GLTextureView implements IRenderView {
@@ -113,7 +123,6 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
     private int mPreviousPersonNum = 0;
 
     private boolean mRecording = false;
-    private FFmpegRecorder mFFmpegRecorder = null;
 
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
@@ -322,10 +331,30 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             if (mp == null)
                 return;
 
-            if(mTextureView.mRender!=null){
+            if(mTextureView.mRender!=null && mTextureView.mRender.getVideoTexture() != null){
                 mp.setSurface(new Surface(mTextureView.mRender.getVideoTexture()));
             } else {
                 Log.e(TAG,"can't set surface to media player due to surface is not initialed");
+
+                final Handler h = new Handler();
+                h.postDelayed(new Runnable()
+                {
+                    private long time = 0;
+
+                    @Override
+                    public void run()
+                    {
+                        // do stuff then
+                        // can call h again after work!
+                        time += 1000;
+                        Log.d(TAG, "Recheck if surface created, going for... " + time);
+                        if(mTextureView.mRender!=null && mTextureView.mRender.getVideoTexture() != null){
+                            mp.setSurface(new Surface(mTextureView.mRender.getVideoTexture()));
+                        } else {
+                            h.postDelayed(this, 1000);
+                        }
+                    }
+                }, 1000); // 1 second delay (takes millis)
             }
             /*if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) &&
                     (mp instanceof ISurfaceTextureHolder)) {
@@ -600,10 +629,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                         mIntersectCount++;
                         Log.d(TAG,"UO Intersect IOU "+iou+" count "+mIntersectCount);
                         if(mIntersectCount>2){
-                            if(mFFmpegRecorder!=null){
-                                mFFmpegRecorder.stopRecording();
-                                mFFmpegRecorder=null;
-                            }
+
                         }
                     } else {
                         mIntersectCount = 0;
@@ -753,6 +779,11 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                     boolean ifChanged = detectObjectChanges(bmp);
                     Log.d(TAG,"Object changed after person leaving: "+ifChanged);
                     checkIfNeedSendDummyTask(bmp);
+                    if(mRecording){
+                        FFmpeg.cancel();
+                        String result = FFmpeg.getLastCommandOutput();
+                        Log.d(TAG,"FFMPEG output is "+result);
+                    }
                     return;
                 }
             } else {
@@ -771,9 +802,66 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             doFaceDetectionAndSendTask(result,bmp);
             if(mRecording==false){
                 mRecording = true;
+                //"-i", url, "-acodec", "copy", "-vcodec", "copy", targetFile.toString()
                 Log.v(TAG,"FFMPEG Starting video recording");
                 File mp4File = getOutputMediaFile("video_");
-                mFFmpegRecorder = new FFmpegRecorder(mContext,VideoActivity.getVideoURL(),mp4File);
+                File mp4File2 = getOutputMediaFile("video_resized_");
+                String command = "-i "+VideoActivity.getVideoURL()+
+                        //" -c:v h264_mediacodec -b:v 500k"+
+                        //" -vf scale=-2:640 " +
+                        " -vcodec copy " +
+                        mp4File;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Do something after 100ms
+                        FFmpeg.execute(command);
+                        int rc = FFmpeg.getLastReturnCode();
+                        String output = FFmpeg.getLastCommandOutput();
+
+                        if (rc == RETURN_CODE_SUCCESS) {
+                            Log.i(Config.TAG, "Record Command execution completed successfully: "+output);
+                        } else if (rc == RETURN_CODE_CANCEL) {
+                            Log.i(Config.TAG, "Record Command execution cancelled by user.");
+
+                            /*
+                            new Mp4Composer(mp4File.toString(), mp4File2.toString())
+                                    .size( DETECTION_IMAGE_WIDTH,  DETECTION_IMAGE_HEIGHT)
+                                    .videoBitrate(500000)
+                                    .mute(true)
+                                    .listener(new Mp4Composer.Listener() {
+                                        @Override
+                                        public void onProgress(double progress) {
+                                            Log.d(TAG, "Record onProgress = " + progress);
+                                        }
+
+                                        @Override
+                                        public void onCompleted() {
+                                            Log.d(TAG, "Record onCompleted()");
+                                            //runOnUiThread(() -> {
+                                            //    Toast.makeText(context, "codec complete path =" + destPath, Toast.LENGTH_SHORT).show();
+                                            //});
+                                        }
+
+                                        @Override
+                                        public void onCanceled() {
+                                            Log.d(TAG, "Record onCanceled");
+                                        }
+
+                                        @Override
+                                        public void onFailed(Exception exception) {
+                                            Log.e(TAG, "Record onFailed()", exception);
+                                        }
+                                    })
+                                    .start();
+                            Log.i(Config.TAG, "Record Resize Started");
+                                   */
+                        } else {
+                            Log.i(Config.TAG, String.format("Record Command execution failed with rc=%d and output=%s.", rc, output));
+                        }
+                    }
+                }).start();
+                //mFFmpegRecorder = new FFmpegRecorder(mContext,VideoActivity.getVideoURL(),mp4File);
             }
         }
 

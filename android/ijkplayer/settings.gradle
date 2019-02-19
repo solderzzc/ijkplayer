@@ -9,6 +9,7 @@ include ':magicfilter'
 //include ':OpenCV3.1'
 include ':openCVLibrary341'
 include ':nativeLib'
+//include ':mp4compose'
 
 include ':ijkplayer-java'
 include ':ijkplayer'
