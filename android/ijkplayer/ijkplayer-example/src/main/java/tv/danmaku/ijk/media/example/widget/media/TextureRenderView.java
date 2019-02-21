@@ -53,6 +53,7 @@ import com.daasuu.mp4compose.filter.GlSepiaFilter;
 import com.mtcnn_as.FaceDetector;
 import com.sharpai.detector.Classifier;
 import com.sharpai.detector.Detector;
+import com.sharpai.detector.PoseEstimator;
 import com.sharpai.pim.MotionDetectionRS;
 //import com.zolad.videoslimmer.VideoSlimmer;
 
@@ -112,6 +113,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
     private Detector mDetector = null;
     private FaceDetector mFaceDetector = null;
+    private PoseEstimator mPoseEstimator = null;
 
     private long mLastTaskSentTimestamp = 0L;
     private int mSavingCounter = 0;
@@ -162,6 +164,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
         mDetector = new Detector(mContext);
         mFaceDetector = new FaceDetector(mContext);
+        mPoseEstimator = new PoseEstimator(mContext);
 
         mMOG2 = Video.createBackgroundSubtractorKNN(5,100,false);//Video.createBackgroundSubtractorMOG2();
         //mMOG2 = Video.createBackgroundSubtractorMOG2();//Video.createBackgroundSubtractorMOG2();
@@ -685,6 +688,12 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             int num = mFaceDetector.predict_image(personBmp);
             tsEnd = System.currentTimeMillis();
             Log.v(TAG,"time diff (FD) "+(tsEnd-tsStart));
+
+            tsStart = System.currentTimeMillis();
+            mPoseEstimator.processImage(personBmp);
+            tsEnd = System.currentTimeMillis();
+            Log.v(TAG,"time diff (PE) "+(tsEnd-tsStart));
+
             if(num > 0){
                 face_num+=num;
                 try {
