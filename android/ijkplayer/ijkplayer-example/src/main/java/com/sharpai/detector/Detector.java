@@ -167,6 +167,7 @@ public class Detector {
 
           cropToFrameTransform.mapRect(location);
           result.setLocation(location);
+          Log.i(TAG,"person width: "+location.width()+" height: "+location.height());
           mappedRecognitions.add(result);
         }
       }
