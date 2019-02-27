@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
-set(libs "${CMAKE_SOURCE_DIR}/libs")
+set(libs "${CMAKE_SOURCE_DIR}/../ijkplayer-example/libs")
 include_directories(${CMAKE_SOURCE_DIR}/src/main/cpp/include)
 
 add_library(libopencv_java3 SHARED IMPORTED )
