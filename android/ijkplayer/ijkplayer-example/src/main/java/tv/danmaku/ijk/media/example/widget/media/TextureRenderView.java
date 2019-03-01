@@ -125,6 +125,8 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
     private boolean mRecording = false;
 
+    private long mLastCleanPicsTimestamp = 0L;
+
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
     }
@@ -201,7 +203,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                     } finally {
                         if (urlConnection != null) {
                             urlConnection.disconnect();
-                            return true;
+                             return true;
                         }
                     }
                     break;
@@ -249,6 +251,8 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
         mMeasureHelper = new MeasureHelper(this);
         mSurfaceCallback = new SurfaceCallback(this);
         setSurfaceTextureListener(mSurfaceCallback);
+
+        mLastCleanPicsTimestamp = System.currentTimeMillis();
     }
 
     @Override
@@ -768,6 +772,13 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
         boolean bigChanged = true;
 
+        //clean up pictures every 5 mins
+        if (tsStart-mLastCleanPicsTimestamp > 5*60*1000) {
+            Log.d("##RDBG", "clean pictures every 5 mins");
+            mLastCleanPicsTimestamp = tsStart;
+            deleteAllCapturedPics();
+        }
+
         if(mPreviousPersonNum == 0){
             bigChanged = mMotionDetection.detect(bmp);
             VideoActivity.setMotionStatus(bigChanged);
@@ -958,7 +969,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                     File[] files = f.listFiles();
 
                     for (File fPic: files) {
-                        if (fPic.isFile() && fPic.getPath().endsWith(".jpg")) {
+                        if (fPic.isFile()/* && fPic.getPath().endsWith(".jpg")*/) {
                             fPic.delete();
                         }
                     }
