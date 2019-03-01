@@ -772,9 +772,9 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
 
         boolean bigChanged = true;
 
-        //clean up pictures every 5 mins
-        if (tsStart-mLastCleanPicsTimestamp > 5*60*1000) {
-            Log.d("##RDBG", "clean pictures every 5 mins");
+        //clean up pictures every 2 mins
+        if (tsStart-mLastCleanPicsTimestamp > 2*60*1000) {
+            Log.d("##RDBG", "clean pictures every 2 mins");
             mLastCleanPicsTimestamp = tsStart;
             deleteAllCapturedPics();
         }
@@ -961,6 +961,8 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
             return;
         }
 
+        long now = System.currentTimeMillis();
+
         mDeletePicsThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -969,7 +971,7 @@ public class TextureRenderView extends GLTextureView implements IRenderView {
                     File[] files = f.listFiles();
 
                     for (File fPic: files) {
-                        if (fPic.isFile()/* && fPic.getPath().endsWith(".jpg")*/) {
+                        if (fPic.isFile()/* && fPic.getPath().endsWith(".jpg")*/ && (now - fPic.lastModified() > 1               *60*1000)) {
                             fPic.delete();
                         }
                     }
