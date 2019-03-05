@@ -77,6 +77,8 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
     private FrameUpdateListener mFrameUpdateListener = null;
 
+    private long mLastCleanPicsTimestamp = 0L;
+
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
     }
@@ -420,6 +422,14 @@ public class TextureRenderView extends TextureView implements IRenderView {
             File file = null;
             VideoActivity.setPixelDiff(mMotionDetection.getPercentageOfDifferentPixels());
 
+            //clean up pictures every 2 mins
+            long tsStart = System.currentTimeMillis();
+            if (tsStart-mLastCleanPicsTimestamp > 2*60*1000) {
+                Log.d("##RDBG", "clean pictures every 2 mins");
+                mLastCleanPicsTimestamp = tsStart;
+                deleteAllCapturedPics();
+            }
+
             // if no bigchange, but timespan between two uploaded frames is larger than 30s, treat it as big change
             if (!bigChanged) {
                 long tm = System.currentTimeMillis();
@@ -555,8 +565,10 @@ public class TextureRenderView extends TextureView implements IRenderView {
                     File f = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
                     File[] files = f.listFiles();
 
+                    long now = System.currentTimeMillis();
+
                     for (File fPic: files) {
-                        if (fPic.isFile() && fPic.getPath().endsWith(".jpg")) {
+                        if (fPic.isFile() && /*fPic.getPath().endsWith(".jpg")*/ (now - fPic.lastModified() > 1*60*1000)) {
                             fPic.delete();
                         }
                     }
