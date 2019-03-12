@@ -55,6 +55,7 @@ dependencies {
 
     compile project(':ijkplayer-java')
     //compile project(':ijkplayer-exo')
+    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2'
 
     compile project(':easyrs')
     compile project(':rembrandtAndroid')

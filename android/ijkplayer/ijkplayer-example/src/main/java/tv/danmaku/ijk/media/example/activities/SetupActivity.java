@@ -68,6 +68,9 @@ public class SetupActivity extends AppCompatActivity {
     private String getSavedPassword(){
         return mSharedPreferences.getString("cameraPassword","");
     }
+    private String getSavedIP(){
+        return mSharedPreferences.getString("videoIP","");
+    }
     public static void intentTo(Context context) {
         context.startActivity(newIntent(context));
     }
@@ -104,15 +107,17 @@ public class SetupActivity extends AppCompatActivity {
             String savedSN = mSharedPreferences.getString("cameraSN","");
             ///Filter repeated and only show IPV4
             ///过滤重复的以及只显示IPV4
+            Log.d("##RDBG", "ipaddress: " + ipaddress + ", savedIP: " + getSavedIP());
             if((!inforSet.contains(temp)) && (device_net_info_ex.iIPVersion == 4)){
                 inforSet.add(temp);
                 //Message msg = mHandler.obtainMessage(UPDATE_SEARCH_DEV_INFOR);
                 //msg.obj = temp;
                 //mHandler.sendMessage(msg);
-                if(SN.equals(savedSN)){
+                if(/*SN.equals(savedSN)*/ipaddress.equalsIgnoreCase(getSavedIP())){
                     String videoUrl = "rtsp://"+getSavedUsername()+":"+getSavedPassword()+"@"+ipaddress+":554/cam/realmonitor?channel=1&subtype=0";
                     mConnectedToCamera = true;
                     VideoActivity.intentTo(mContext, videoUrl);
+                    Log.d("##RDBG", "videoUrl: " + videoUrl);
                     finish();
                     System.exit(0);
                 }
@@ -171,6 +176,7 @@ public class SetupActivity extends AppCompatActivity {
                 }
             }
         }, 60000, 10000);
+
     }
 
     /** For processes to access shared internal storage (/sdcard) we need this permission. */
