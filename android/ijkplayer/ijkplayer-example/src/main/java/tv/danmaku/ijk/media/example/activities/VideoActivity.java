@@ -45,6 +45,7 @@ import android.widget.Toast;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import tv.danmaku.ijk.media.example.application.VideoApplication;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.misc.ITrackInfo;
@@ -133,6 +134,19 @@ public class VideoActivity extends AppCompatActivity implements TracksFragment.I
         return "";
         //String videoUrl = "rtsp://admin:abc12345@"+ci.getIp()+":554/cam/realmonitor?channel=1&subtype=0";
     }
+
+    @Override
+    protected void onResume() {
+        ((VideoApplication)getApplicationContext()).setActivity(this);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ((VideoApplication)getApplicationContext()).setActivity(null);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

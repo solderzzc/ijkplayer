@@ -49,10 +49,24 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import tv.danmaku.ijk.media.example.R;
+import tv.danmaku.ijk.media.example.application.VideoApplication;
 
 public class SetupActivity extends AppCompatActivity {
     private Context mContext;
     private static final int REQUESTCODE_PERMISSION_STORAGE = 1234;
+
+    @Override
+    protected void onResume() {
+        ((VideoApplication)getApplicationContext()).setActivity(this);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ((VideoApplication)getApplicationContext()).setActivity(null);
+    }
+
     WIFIConfigurationModule mConfigModule;
     final Set<String> inforSet = new HashSet<String>();
     SharedPreferences mSharedPreferences;

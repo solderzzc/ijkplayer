@@ -1,8 +1,13 @@
 package tv.danmaku.ijk.media.example.mqtt;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -21,6 +26,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import tv.danmaku.ijk.media.example.activities.SetupActivity;
+import tv.danmaku.ijk.media.example.activities.VideoActivity;
+import tv.danmaku.ijk.media.example.application.VideoApplication;
 
 public class VideoMqttClient implements MqttCallback {
     private Context context;
@@ -137,9 +144,32 @@ public class VideoMqttClient implements MqttCallback {
                 Log.d("##RDBG", "camerasettings, ip: " + ip + ", username: " + username + ",password: " + password);
                 saveCameraSettings(ip, username, password, uuid);
 
-                SetupActivity.intentTo(context);
+                quitAndStartLater();
             }
         }
+    }
+
+    private void quitAndStartLater() {
+        AppCompatActivity activity = ((VideoApplication)context).getActivity();
+        if (activity == null)
+            return;
+
+        Intent intent = new Intent(activity, SetupActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //PendingIntent pendingIntent = PendingIntent.getActivity(VideoActivity.this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
+        Intent resultIntent = new Intent(activity, SetupActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(activity);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent pendingIntent =
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        AlarmManager mgr = (AlarmManager)activity.getSystemService(Context.ALARM_SERVICE);
+
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis()+15000, pendingIntent);
+
+        activity.finish();
+        System.exit(2);
     }
 
     @Override
