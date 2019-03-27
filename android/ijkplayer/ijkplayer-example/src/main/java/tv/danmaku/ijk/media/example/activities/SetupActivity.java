@@ -79,6 +79,9 @@ public class SetupActivity extends AppCompatActivity {
     private String getSavedUsername(){
         return mSharedPreferences.getString("cameraUsername","");
     }
+    private String getSavedRtspURL(){
+        return mSharedPreferences.getString("videoURL","");
+    }
     private String getSavedPassword(){
         return mSharedPreferences.getString("cameraPassword","");
     }
@@ -127,11 +130,12 @@ public class SetupActivity extends AppCompatActivity {
                 //Message msg = mHandler.obtainMessage(UPDATE_SEARCH_DEV_INFOR);
                 //msg.obj = temp;
                 //mHandler.sendMessage(msg);
-                if(/*SN.equals(savedSN)*/ipaddress.equalsIgnoreCase(getSavedIP())){
-                    String videoUrl = "rtsp://"+getSavedUsername()+":"+getSavedPassword()+"@"+ipaddress+":554/cam/realmonitor?channel=1&subtype=0";
+                String rtspurl = getSavedRtspURL();
+                if(/*SN.equals(savedSN)*/rtspurl.contains(ipaddress)){
+                    //String videoUrl = "rtsp://"+getSavedUsername()+":"+getSavedPassword()+"@"+ipaddress+":554/cam/realmonitor?channel=1&subtype=0";
                     mConnectedToCamera = true;
-                    VideoActivity.intentTo(mContext, videoUrl);
-                    Log.d("##RDBG", "videoUrl: " + videoUrl);
+                    VideoActivity.intentTo(mContext, rtspurl);
+                    Log.d("##RDBG", "videoUrl: " + rtspurl);
                     finish();
                     System.exit(0);
                 }

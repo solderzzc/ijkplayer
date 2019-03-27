@@ -138,11 +138,9 @@ public class VideoMqttClient implements MqttCallback {
             String uuid = msgObj.getString("uuid");
             //deviceMac = "321ecde3d934";
             if (uuid != null && uuid.equalsIgnoreCase(deviceMac)) {
-                String ip = msgObj.getString("camip");
-                String username = msgObj.getString("camusername");
-                String password = msgObj.getString("campassword");
-                Log.d("##RDBG", "camerasettings, ip: " + ip + ", username: " + username + ",password: " + password);
-                saveCameraSettings(ip, username, password, uuid);
+                String rtspurl = msgObj.getString("camrtspurl");
+                Log.d("##RDBG", "camerasettings, rtspurl: " + rtspurl);
+                saveCameraSettings(rtspurl, uuid);
 
                 quitAndStartLater();
             }
@@ -177,15 +175,12 @@ public class VideoMqttClient implements MqttCallback {
         Log.d("##RDBG", "deliveryComplete");
     }
 
-    private void saveCameraSettings(String ip, String username, String password, String uuid){
+    private void saveCameraSettings(String rtspurl, String uuid){
 
         SharedPreferences sp = context.getSharedPreferences(CAMERAIPKEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
-        editor.putString("cameraUsername", username);
-        editor.putString("cameraPassword", password);
-        String videoUrl = "rtsp://admin:abc12345@"+ip+":554/cam/realmonitor?channel=1&subtype=0";
+        String videoUrl = rtspurl;
         editor.putString("videoURL", videoUrl);
-        editor.putString("videoIP", ip);
         editor.putString("cameraSN", deviceMac);
         editor.commit();
     }
