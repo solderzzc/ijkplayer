@@ -27,8 +27,8 @@ ext {
 
     targetSdkVersion = 25
 
-    versionCode = 800803
-    versionName = "0.9.2"
+    versionCode = 800804
+    versionName = "0.9.3"
 }
 
 wrapper {
