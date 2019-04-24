@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -194,6 +195,16 @@ public class SetupActivity extends AppCompatActivity {
                 }
             }
         }, 60000, 10000);
+
+        String rtspurl = getSavedRtspURL();
+        if(!TextUtils.isEmpty(rtspurl)){
+            //String videoUrl = "rtsp://"+getSavedUsername()+":"+getSavedPassword()+"@"+ipaddress+":554/cam/realmonitor?channel=1&subtype=0";
+            mConnectedToCamera = true;
+            VideoActivity.intentTo(mContext, rtspurl);
+            Log.d("##RDBG", "videoUrl: " + rtspurl);
+            finish();
+            System.exit(0);
+        }
 
     }
 
