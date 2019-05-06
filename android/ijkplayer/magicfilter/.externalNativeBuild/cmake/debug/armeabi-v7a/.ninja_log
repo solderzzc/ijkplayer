@@ -1,0 +1,5 @@
+# ninja log v5
+0	509	1557122551	CMakeFiles/JniBitmapOperationsLibrary.dir/src/main/jni/JniBitmapOperationsLibrary.cpp.o	1ef00702b09b6e06
+510	679	1557122551	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libJniBitmapOperationsLibrary.so	2a0d5263197428c1
+1	126	1557122551	CMakeFiles/MagicBeautify.dir/src/main/jni/MagicJni.cpp.o	7303bb162330ba53
+126	155	1557122551	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libMagicBeautify.so	7c09e46eda5160e8

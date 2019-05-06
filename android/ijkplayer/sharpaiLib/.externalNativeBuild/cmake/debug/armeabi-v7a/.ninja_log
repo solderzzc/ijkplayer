@@ -1,0 +1,5 @@
+# ninja log v5
+0	1720	1557122556	CMakeFiles/mtcnn.dir/src/main/cpp/mtcnn_jni.cpp.o	d8807ae0e656df78
+1	2294	1557122557	CMakeFiles/mtcnn.dir/src/main/cpp/native-lib.cpp.o	5d12603f0f6dfa3b
+0	2837	1557122557	CMakeFiles/mtcnn.dir/src/main/cpp/mtcnn.cpp.o	6e25363b373e956e
+2837	4321	1557122559	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libmtcnn.so	bb4a531e6d6d6724

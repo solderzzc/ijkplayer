@@ -1,0 +1,13 @@
+# ninja log v5
+61	5745	1557122526	CMakeFiles/facedetection.dir/facedetectcnn-floatdata.cpp.o	8e317fcde5efebb2
+58	5785	1557122526	CMakeFiles/facedetection_shared.dir/facedetectcnn-floatdata.cpp.o	32e3fc5a9e5c580
+59	6002	1557122526	CMakeFiles/facedetection_shared.dir/facedetectcnn-int8data.cpp.o	fe622859cbca6fc5
+60	7944	1557122528	CMakeFiles/facedetection_shared.dir/facedetectcnn.cpp.o	741250cc26b8046d
+59	8684	1557122529	CMakeFiles/facedetection_shared.dir/facedetectcnn-jni.cpp.o	c87c058429976f60
+59	9667	1557122530	CMakeFiles/facedetection_shared.dir/facedetectcnn-model.cpp.o	95ab641ffa9e0c5
+5784	10373	1557122531	CMakeFiles/facedetection.dir/facedetectcnn-int8data.cpp.o	fe686ce1dc94e7ca
+7944	10560	1557122531	CMakeFiles/facedetection.dir/facedetectcnn.cpp.o	665d77432393a329
+5785	10708	1557122531	CMakeFiles/facedetection.dir/facedetectcnn-jni.cpp.o	f6894155fb1edf08
+6002	11267	1557122532	CMakeFiles/facedetection.dir/facedetectcnn-model.cpp.o	dfcd7846ed4f1fac
+11267	12543	1557122533	libfacedetection.a	eaf12beed6cefa92
+12543	13473	1557122534	/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/build/intermediates/cmake/debug/obj/armeabi-v7a/libfacedetection.so	b8fd6aa65562a66e
