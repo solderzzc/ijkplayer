@@ -1,0 +1,133 @@
+CMake Warning at /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineSystem.cmake:94 (include)
+  CMakeLists.txt
+
+
+Check for working C compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang
+CMake Warning at /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)
+
+
+Check for working C compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang -- works
+Detecting C compiler ABI info
+CMake Warning at /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)
+
+
+Detecting C compiler ABI info - done
+Detecting C compile features
+CMake Warning at /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)
+
+
+CMake Warning at /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)
+
+
+CMake Warning at /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)
+
+
+Detecting C compile features - done
+Check for working CXX compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++
+CMake Warning at /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)
+
+
+Check for working CXX compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ -- works
+Detecting CXX compiler ABI info
+CMake Warning at /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)
+
+
+Detecting CXX compiler ABI info - done
+Detecting CXX compile features
+CMake Warning at /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)
+
+
+CMake Warning at /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)
+
+
+CMake Warning at /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)
+
+
+CMake Warning at /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake:217 (message):
+  gnustl_static is deprecated and will be removed in the next release.
+  Please switch to either c++_shared or c++_static.  See
+  https://developer.android.com/ndk/guides/cpp-support.html for more
+  information.
+Call Stack (most recent call first):
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)
+  /Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/debug/armeabi-v7a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)
+
+
+Detecting CXX compile features - done
+Configuring done

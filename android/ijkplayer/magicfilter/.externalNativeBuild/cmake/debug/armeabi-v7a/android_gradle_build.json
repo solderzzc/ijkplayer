@@ -1,0 +1,55 @@
+{
+  "stringTable": {
+    "0": "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/.externalNativeBuild/cmake/debug/armeabi-v7a",
+    "1": "--target=armv7-none-linux-androideabi --gcc-toolchain=/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sysroot -DJniBitmapOperationsLibrary_EXPORTS -isystem /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/cxx-stl/stlport/stlport -isystem /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/cxx-stl/gabi++/include -isystem /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sysroot/usr/include/arm-linux-androideabi -D__ANDROID_API__=18 -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -mthumb -Wa,--noexecstack -Wformat -Werror=format-security -O0 -fno-limit-debug-info -fPIC",
+    "2": "--target=armv7-none-linux-androideabi --gcc-toolchain=/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64 --sysroot=/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sysroot -DMagicBeautify_EXPORTS -isystem /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/cxx-stl/stlport/stlport -isystem /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/cxx-stl/gabi++/include -isystem /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sysroot/usr/include/arm-linux-androideabi -D__ANDROID_API__=18 -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -mthumb -Wa,--noexecstack -Wformat -Werror=format-security -O0 -fno-limit-debug-info -fPIC"
+  },
+  "buildFiles": [
+    "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/../../../../../Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake",
+    "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/.externalNativeBuild/cmake/debug/armeabi-v7a --target clean"
+  ],
+  "libraries": {
+    "MagicBeautify-Debug-armeabi-v7a": {
+      "buildCommand": "/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/.externalNativeBuild/cmake/debug/armeabi-v7a --target MagicBeautify",
+      "buildType": "debug",
+      "toolchain": "1140712694",
+      "abi": "armeabi-v7a",
+      "artifactName": "MagicBeautify",
+      "files": [
+        {
+          "src": "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/src/main/jni/MagicJni.cpp",
+          "flagsOrdinal": 2,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "output": "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/build/intermediates/cmake/debug/obj/armeabi-v7a/libMagicBeautify.so"
+    },
+    "JniBitmapOperationsLibrary-Debug-armeabi-v7a": {
+      "buildCommand": "/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/.externalNativeBuild/cmake/debug/armeabi-v7a --target JniBitmapOperationsLibrary",
+      "buildType": "debug",
+      "toolchain": "1140712694",
+      "abi": "armeabi-v7a",
+      "artifactName": "JniBitmapOperationsLibrary",
+      "files": [
+        {
+          "src": "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/src/main/jni/JniBitmapOperationsLibrary.cpp",
+          "flagsOrdinal": 1,
+          "workingDirectoryOrdinal": 0
+        }
+      ],
+      "output": "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/build/intermediates/cmake/debug/obj/armeabi-v7a/libJniBitmapOperationsLibrary.so"
+    }
+  },
+  "toolchains": {
+    "1140712694": {
+      "cppCompilerExecutable": "/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": [
+    "cpp"
+  ]
+}

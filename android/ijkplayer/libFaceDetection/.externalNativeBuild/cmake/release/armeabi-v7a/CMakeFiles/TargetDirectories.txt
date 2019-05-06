@@ -1,0 +1,4 @@
+/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/facedetection_shared.dir
+/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/facedetection.dir

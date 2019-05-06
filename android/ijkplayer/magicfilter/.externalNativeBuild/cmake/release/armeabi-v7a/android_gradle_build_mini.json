@@ -1,0 +1,23 @@
+{
+  "buildFiles": [
+    "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/../../../../../Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake",
+    "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/.externalNativeBuild/cmake/release/armeabi-v7a --target clean"
+  ],
+  "libraries": {
+    "JniBitmapOperationsLibrary-Release-armeabi-v7a": {
+      "artifactName": "JniBitmapOperationsLibrary",
+      "buildCommand": "/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/.externalNativeBuild/cmake/release/armeabi-v7a --target JniBitmapOperationsLibrary",
+      "abi": "armeabi-v7a",
+      "output": "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/build/intermediates/cmake/release/obj/armeabi-v7a/libJniBitmapOperationsLibrary.so"
+    },
+    "MagicBeautify-Release-armeabi-v7a": {
+      "artifactName": "MagicBeautify",
+      "buildCommand": "/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/.externalNativeBuild/cmake/release/armeabi-v7a --target MagicBeautify",
+      "abi": "armeabi-v7a",
+      "output": "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/build/intermediates/cmake/release/obj/armeabi-v7a/libMagicBeautify.so"
+    }
+  }
+}

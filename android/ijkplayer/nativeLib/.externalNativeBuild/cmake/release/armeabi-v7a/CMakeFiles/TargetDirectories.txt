@@ -1,0 +1,3 @@
+/Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+/Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/actiontec/workspace/ijkplayer/android/ijkplayer/nativeLib/.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/jupiter_opencv_320.dir

@@ -1,0 +1,23 @@
+{
+  "buildFiles": [
+    "/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake",
+    "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/debug/armeabi-v7a --target clean"
+  ],
+  "libraries": {
+    "facedetection-Debug-armeabi-v7a": {
+      "artifactName": "facedetection",
+      "buildCommand": "/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/debug/armeabi-v7a --target facedetection",
+      "abi": "armeabi-v7a",
+      "output": "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/debug/armeabi-v7a/libfacedetection.a"
+    },
+    "facedetection_shared-Debug-armeabi-v7a": {
+      "artifactName": "facedetection_shared",
+      "buildCommand": "/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/debug/armeabi-v7a --target facedetection_shared",
+      "abi": "armeabi-v7a",
+      "output": "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/build/intermediates/cmake/debug/obj/armeabi-v7a/libfacedetection.so"
+    }
+  }
+}

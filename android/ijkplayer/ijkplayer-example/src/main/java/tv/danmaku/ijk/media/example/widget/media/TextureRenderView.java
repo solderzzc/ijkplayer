@@ -40,6 +40,8 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.sharpai.pim.MotionDetectionRS;
 
+import org.sharpai.lib.Detection;
+
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
@@ -59,7 +61,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
     private static final String TAG = "TextureRenderView";
     private MeasureHelper mMeasureHelper;
     private Context mContext;
-    private Handler mBackgroundHandler;
+    //private Handler mBackgroundHandler;
 
     private static final int PROCESS_SAVED_IMAGE_MSG = 1002;
     private static final int PROCESS_SAVED_IMAGE_MSG_NOTNOW = 2001;
@@ -71,13 +73,15 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
     private static final int PROCESS_FRAMES_AFTER_MOTION_DETECTED = 3;
 
-    private RenderScript mRS = null;
+    /*private RenderScript mRS = null;
     private MotionDetectionRS mMotionDetection;
-    private RSImageProcessor mRSProcessor;
+    private RSImageProcessor mRSProcessor;*/
 
     private FrameUpdateListener mFrameUpdateListener = null;
 
     private long mLastCleanPicsTimestamp = 0L;
+
+    private Detection mDecection = null;
 
     public interface FrameUpdateListener {
         public void onFrameUpdate(long currentTime);
@@ -100,14 +104,16 @@ public class TextureRenderView extends TextureView implements IRenderView {
         DETECTION_IMAGE_HEIGHT = DETECTION_IMAGE_WIDTH * PREVIEW_IMAGE_HEIGHT  / PREVIEW_IMAGE_WIDTH;
         Log.i(TAG,"DETECTION_IMAGE_HEIGHT " + DETECTION_IMAGE_HEIGHT);
 
-        mRS = RenderScript.create(mContext);
+        /*mRS = RenderScript.create(mContext);
         mMotionDetection = new MotionDetectionRS(mContext.getSharedPreferences(
                 MotionDetectionRS.PREFS_NAME, Context.MODE_PRIVATE),mRS,
                 PREVIEW_IMAGE_WIDTH,PREVIEW_IMAGE_HEIGHT,DETECTION_IMAGE_WIDTH,DETECTION_IMAGE_HEIGHT);
         mRSProcessor = new RSImageProcessor(mRS);
-        mRSProcessor.initialize(DETECTION_IMAGE_WIDTH, DETECTION_IMAGE_HEIGHT);
+        mRSProcessor.initialize(DETECTION_IMAGE_WIDTH, DETECTION_IMAGE_HEIGHT);*/
+
+        mDecection = new Detection(mContext, null, null);
     }
-    class MyCallback implements Handler.Callback {
+    /*class MyCallback implements Handler.Callback {
 
         @Override
         public boolean handleMessage(Message msg) {
@@ -148,14 +154,14 @@ public class TextureRenderView extends TextureView implements IRenderView {
             }
             return true;
         }
-    }
+    }*/
     public TextureRenderView(Context context) {
         super(context);
         mContext = context;
-        HandlerThread handlerThread = new HandlerThread("BackgroundThread");
+        /*HandlerThread handlerThread = new HandlerThread("BackgroundThread");
         handlerThread.start();
         MyCallback callback = new MyCallback();
-        mBackgroundHandler = new Handler(handlerThread.getLooper(), callback);
+        mBackgroundHandler = new Handler(handlerThread.getLooper(), callback);*/
 
         initView(context);
         initDetectionContext();
@@ -417,7 +423,8 @@ public class TextureRenderView extends TextureView implements IRenderView {
 
         private void processFrame(SurfaceTexture surface){
             Bitmap bmp= mWeakRenderView.get().getBitmap();
-            boolean bigChanged = mMotionDetection.detect(bmp);
+            mDecection.processBitmap(bmp);
+            /*boolean bigChanged = mMotionDetection.detect(bmp);
             String filename = "";
             File file = null;
             VideoActivity.setPixelDiff(mMotionDetection.getPercentageOfDifferentPixels());
@@ -475,7 +482,7 @@ public class TextureRenderView extends TextureView implements IRenderView {
                 return;
             }
             mBackgroundHandler.obtainMessage(PROCESS_SAVED_IMAGE_MSG, filename).sendToTarget();
-            return;
+            return;*/
         }
         @Override
         public void onSurfaceTextureUpdated(SurfaceTexture surface) {

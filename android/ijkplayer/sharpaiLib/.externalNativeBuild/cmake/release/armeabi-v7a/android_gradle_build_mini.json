@@ -1,0 +1,17 @@
+{
+  "buildFiles": [
+    "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/sharpaiLib/../../../../../Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake",
+    "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/sharpaiLib/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/actiontec/workspace/ijkplayer/android/ijkplayer/sharpaiLib/.externalNativeBuild/cmake/release/armeabi-v7a --target clean"
+  ],
+  "libraries": {
+    "mtcnn-Release-armeabi-v7a": {
+      "artifactName": "mtcnn",
+      "buildCommand": "/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build /Users/actiontec/workspace/ijkplayer/android/ijkplayer/sharpaiLib/.externalNativeBuild/cmake/release/armeabi-v7a --target mtcnn",
+      "abi": "armeabi-v7a",
+      "output": "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/sharpaiLib/build/intermediates/cmake/release/obj/armeabi-v7a/libmtcnn.so"
+    }
+  }
+}

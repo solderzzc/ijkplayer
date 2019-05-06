@@ -1,0 +1,381 @@
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"supportedProtocolVersions":[{"isExperimental":true,"major":1,"minor":1}],"type":"hello"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {
+  "type": "handshake",
+  "cookie": "gradle-cmake-cookie",
+  "protocolVersion": {
+    "isExperimental": true,
+    "major": 1,
+    "minor": 1
+  },
+  "sourceDirectory": "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp",
+  "buildDirectory": "/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/release/armeabi-v7a",
+  "generator": "Ninja"
+}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"gradle-cmake-cookie","inReplyTo":"handshake","type":"reply"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {
+  "type": "configure",
+  "cacheArguments": [
+    "",
+    "-DANDROID_ABI\u003darmeabi-v7a",
+    "-DANDROID_PLATFORM\u003dandroid-21",
+    "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003d/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/build/intermediates/cmake/release/obj/armeabi-v7a",
+    "-DCMAKE_BUILD_TYPE\u003dRelease",
+    "-DANDROID_NDK\u003d/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle",
+    "-DCMAKE_SYSTEM_NAME\u003dAndroid",
+    "-DCMAKE_ANDROID_ARCH_ABI\u003darmeabi-v7a",
+    "-DCMAKE_SYSTEM_VERSION\u003d21",
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON",
+    "-DCMAKE_ANDROID_NDK\u003d/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle",
+    "-DCMAKE_TOOLCHAIN_FILE\u003d/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake",
+    "-G Ninja",
+    "-DCMAKE_MAKE_PROGRAM\u003d/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+    "-DANDROID_ARM_NEON\u003dTRUE"
+  ]
+}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Check for working C compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Check for working C compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang
+CMAKE SERVER: Check for working C compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":33,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Check for working C compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang -- works","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Check for working C compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang -- works
+CMAKE SERVER: Check for working C compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang -- works
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting C compiler ABI info","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting C compiler ABI info
+CMAKE SERVER: Detecting C compiler ABI info
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":65,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting C compiler ABI info - done","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting C compiler ABI info - done
+CMAKE SERVER: Detecting C compiler ABI info - done
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting C compile features","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting C compile features
+CMAKE SERVER: Detecting C compile features
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":96,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":126,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":155,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting C compile features - done","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting C compile features - done
+CMAKE SERVER: Detecting C compile features - done
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Check for working CXX compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Check for working CXX compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++
+CMAKE SERVER: Check for working CXX compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":184,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Check for working CXX compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ -- works","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Check for working CXX compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ -- works
+CMAKE SERVER: Check for working CXX compiler: /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ -- works
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting CXX compiler ABI info","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting CXX compiler ABI info
+CMAKE SERVER: Detecting CXX compiler ABI info
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":211,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting CXX compiler ABI info - done","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting CXX compiler ABI info - done
+CMAKE SERVER: Detecting CXX compiler ABI info - done
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting CXX compile features","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting CXX compile features
+CMAKE SERVER: Detecting CXX compile features
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":237,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":262,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":287,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":311,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Detecting CXX compile features - done","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Detecting CXX compile features - done
+CMAKE SERVER: Detecting CXX compile features - done
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"using openmp","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: using openmp
+CMAKE SERVER: using openmp
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"using int8","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: using int8
+CMAKE SERVER: using int8
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"using arm","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: using arm
+CMAKE SERVER: using arm
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","progressCurrent":1000,"progressMaximum":1000,"progressMessage":"Configuring","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","message":"Configuring done","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Configuring done
+CMAKE SERVER: Configuring done
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"configure","type":"reply"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"type":"compute"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"compute","progressCurrent":1000,"progressMaximum":1000,"progressMessage":"Generating","progressMinimum":0,"type":"progress"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"compute","message":"Generating done","type":"message"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: Generating done
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"cookie":"","inReplyTo":"compute","type":"reply"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"type":"cmakeInputs"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"buildFiles":[{"isCMake":true,"isTemporary":false,"sources":["/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineSystem.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Determine.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeSystem.cmake.in","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeSystemSpecificInitialize.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Initialize.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCCompiler.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCompiler.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Determine-C.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android/Determine-Compiler.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeFindBinUtils.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-FindBinUtils.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCCompiler.cmake.in","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCXXCompiler.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCompiler.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Determine-CXX.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android/Determine-Compiler.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeFindBinUtils.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-FindBinUtils.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCXXCompiler.cmake.in","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeSystemSpecificInformation.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeGenericSystem.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Linux.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/UnixPaths.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCInformation.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeLanguageInformation.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-C.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/CMakeCommonCompilerMacros.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/GNU.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/CMakeCommonCompilerMacros.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Clang-C.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Clang.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCommonLanguageInclude.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeTestCCompiler.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeTestCompilerCommon.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCompilerABI.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeParseImplicitLinkInfo.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCCompilerABI.c","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCompileFeatures.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Internal/FeatureTesting.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-C-FeatureTests.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-C-FeatureTests.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-C-FeatureTests.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCCompiler.cmake.in","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCXXInformation.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeLanguageInformation.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Clang-CXX.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Clang.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCommonLanguageInclude.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeTestCXXCompiler.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeTestCompilerCommon.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCompilerABI.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeParseImplicitLinkInfo.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCXXCompilerABI.cpp","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCompileFeatures.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Internal/FeatureTesting.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-FeatureTests.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-TestableFeatures.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-FeatureTests.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-TestableFeatures.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-FeatureTests.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-TestableFeatures.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-FeatureTests.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-TestableFeatures.cmake","/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCXXCompiler.cmake.in"]},{"isCMake":false,"isTemporary":false,"sources":["CMakeLists.txt","/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake","/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/build/cmake/android.toolchain.cmake"]},{"isCMake":false,"isTemporary":true,"sources":["../../../.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/3.10.2/CMakeSystem.cmake","../../../.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/3.10.2/CMakeCCompiler.cmake","../../../.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/3.10.2/CMakeCXXCompiler.cmake","../../../.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/feature_tests.c","../../../.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/feature_tests.c","../../../.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/feature_tests.c","../../../.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/3.10.2/CMakeCCompiler.cmake","../../../.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/feature_tests.cxx","../../../.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/feature_tests.cxx","../../../.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/feature_tests.cxx","../../../.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/feature_tests.cxx","../../../.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/3.10.2/CMakeCXXCompiler.cmake"]}],"cmakeRootDirectory":"/Users/actiontec/Library/Android/sdk/cmake/3.10.2.4988404/share/cmake-3.10","cookie":"","inReplyTo":"cmakeInputs","sourceDirectory":"/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp","type":"reply"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"type":"codemodel"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+
+CMAKE SERVER: 
+
+CMAKE SERVER: [== "CMake Server" ==[
+
+CMAKE SERVER: {"configurations":[{"name":"Release","projects":[{"buildDirectory":"/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/release/armeabi-v7a","name":"facedetection","sourceDirectory":"/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp","targets":[{"artifacts":["/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/build/intermediates/cmake/release/obj/armeabi-v7a/libfacedetection.so"],"buildDirectory":"/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/release/armeabi-v7a","fileGroups":[{"compileFlags":"-isystem /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sysroot/usr/include/arm-linux-androideabi -D__ANDROID_API__=21 -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -mthumb -mfpu=neon -Wa,--noexecstack -Wformat -Werror=format-security -std=c++11  -Os -DNDEBUG  -fPIC   -O3 -std=c++11","defines":["_ENABLE_INT8","_ENABLE_NEON","_OPENMP","facedetection_shared_EXPORTS"],"includePath":[{"path":"/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp"},{"path":"/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/opencv2"},{"isSystem":true,"path":"/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/cxx-stl/llvm-libc++/include"},{"isSystem":true,"path":"/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/android/support/include"},{"isSystem":true,"path":"/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/cxx-stl/llvm-libc++abi/include"}],"isGenerated":false,"language":"CXX","sources":["facedetectcnn-floatdata.cpp","facedetectcnn-int8data.cpp","facedetectcnn-jni.cpp","facedetectcnn-model.cpp","facedetectcnn.cpp"]}],"fullName":"libfacedetection.so","linkFlags":"-Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libatomic.a -nostdlib++ --sysroot /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/platforms/android-21/arch-arm -Wl,--build-id -Wl,--warn-shared-textrel -Wl,--fatal-warnings -Wl,--fix-cortex-a8 -Wl,--exclude-libs,libunwind.a -L/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a -Wl,--no-undefined -Wl,-z,noexecstack -Qunused-arguments -Wl,-z,relro -Wl,-z,now","linkLibraries":"libfacedetection.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_java3.so /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_calib3d.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_core.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_features2d.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_flann.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_highgui.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_imgcodecs.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_imgproc.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_ml.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_objdetect.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_photo.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_stitching.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_video.a /Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/../../../../sharpaiLib/libs/armeabi-v7a/libopencv_videoio.a -llog -latomic -lm \"/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_static.a\" \"/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++abi.a\" \"/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libunwind.a\" \"-ldl\"","linkerLanguage":"CXX","name":"facedetection_shared","sourceDirectory":"/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp","sysroot":"/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sysroot","type":"SHARED_LIBRARY"},{"artifacts":["/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/release/armeabi-v7a/libfacedetection.a"],"buildDirectory":"/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/.externalNativeBuild/cmake/release/armeabi-v7a","fileGroups":[{"compileFlags":"-isystem /Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sysroot/usr/include/arm-linux-androideabi -D__ANDROID_API__=21 -g -DANDROID -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -march=armv7-a -mfloat-abi=softfp -mfpu=vfpv3-d16 -mthumb -mfpu=neon -Wa,--noexecstack -Wformat -Werror=format-security -std=c++11  -Os -DNDEBUG  -fPIC   -O3 -std=c++11","defines":["_ENABLE_INT8","_ENABLE_NEON","_OPENMP"],"includePath":[{"path":"/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp"},{"path":"/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp/opencv2"},{"isSystem":true,"path":"/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/cxx-stl/llvm-libc++/include"},{"isSystem":true,"path":"/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/android/support/include"},{"isSystem":true,"path":"/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sources/cxx-stl/llvm-libc++abi/include"}],"isGenerated":false,"language":"CXX","sources":["facedetectcnn-floatdata.cpp","facedetectcnn-int8data.cpp","facedetectcnn-jni.cpp","facedetectcnn-model.cpp","facedetectcnn.cpp"]}],"fullName":"libfacedetection.a","linkerLanguage":"CXX","name":"facedetection","sourceDirectory":"/Users/actiontec/workspace/ijkplayer/android/ijkplayer/libFaceDetection/src/main/cpp","sysroot":"/Users/actiontec/Library/Android/sdk/r17c.ndk-bundle/sysroot","type":"STATIC_LIBRARY"}]}]}],"cookie":"","inReplyTo":"codemodel","type":"reply"}
+
+CMAKE SERVER: ]== "CMake Server" ==]
+

@@ -1,0 +1,4 @@
+/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/JniBitmapOperationsLibrary.dir
+/Users/actiontec/workspace/ijkplayer/android/ijkplayer/magicfilter/.externalNativeBuild/cmake/release/armeabi-v7a/CMakeFiles/MagicBeautify.dir
